@@ -1,4 +1,5 @@
 import type { ConcertEvent } from '../lib/ticketmaster'
+import type { GeocodedLocation } from '../lib/geocode'
 import './NewsFeed.css'
 
 interface NewsFeedProps {
@@ -7,9 +8,10 @@ interface NewsFeedProps {
   events: ConcertEvent[]
   venueCount: number
   newEventIds: Set<string>
+  location: GeocodedLocation
 }
 
-function NewsFeed({ loading, error, events, venueCount, newEventIds }: NewsFeedProps) {
+function NewsFeed({ loading, error, events, venueCount, newEventIds, location }: NewsFeedProps) {
   const newEvents = events.filter((event) => newEventIds.has(event.id))
 
   return (
@@ -25,7 +27,7 @@ function NewsFeed({ loading, error, events, venueCount, newEventIds }: NewsFeedP
         {!loading && !error && (
           <span className="status-pill">
             {events.length} {events.length === 1 ? 'show' : 'shows'} · {venueCount}{' '}
-            {venueCount === 1 ? 'venue' : 'venues'}
+            {venueCount === 1 ? 'venue' : 'venues'} near {location.label}
           </span>
         )}
       </div>
