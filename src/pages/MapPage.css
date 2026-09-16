@@ -1,0 +1,78 @@
+.map-card {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+/* Popup card */
+.leaflet-popup-content-wrapper {
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+}
+
+.leaflet-popup-content {
+  margin: 14px 16px;
+  min-width: 200px;
+}
+
+.leaflet-popup-content strong {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 15px;
+}
+
+.venue-event-list {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+}
+
+.venue-event-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 0;
+  border-top: 1px solid var(--color-border);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.venue-event-list li:first-child {
+  border-top: none;
+}
+
+.event-date {
+  font-weight: 600;
+  color: var(--color-accent-strong);
+}
+
+.ticket-link {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--color-accent);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.ticket-link:hover {
+  background: var(--color-accent-strong);
+}
+
+/* Marker cluster theming, overriding leaflet.markercluster's default green/yellow/orange */
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background-color: rgba(124, 58, 237, 0.35);
+}
+
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  background-color: var(--color-accent);
+  color: white;
+  font-weight: 600;
+}
