@@ -43,7 +43,7 @@ export async function fetchNearbyConcerts(
     radius: String(radiusKm),
     unit: 'km',
     classificationName: 'music',
-    size: '50',
+    size: '200',
     sort: 'date,asc',
   })
 

@@ -1,10 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import MarkerClusterGroup from 'react-leaflet-cluster'
 import L from 'leaflet'
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png'
 import markerIcon from 'leaflet/dist/images/marker-icon.png'
 import markerShadow from 'leaflet/dist/images/marker-shadow.png'
 import 'leaflet/dist/leaflet.css'
+import 'leaflet.markercluster/dist/MarkerCluster.css'
+import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import './App.css'
 import { fetchNearbyConcerts, type ConcertEvent } from './lib/ticketmaster'
 
@@ -18,6 +21,37 @@ L.Icon.Default.mergeOptions({
 
 const MELBOURNE: [number, number] = [-37.8136, 144.9631]
 
+interface VenueGroup {
+  key: string
+  lat: number
+  lng: number
+  venueName: string
+  events: ConcertEvent[]
+}
+
+function groupByVenue(events: ConcertEvent[]): VenueGroup[] {
+  const groups = new Map<string, VenueGroup>()
+
+  for (const event of events) {
+    // Round to ~11m precision so venues with tiny coordinate jitter still merge.
+    const key = `${event.lat.toFixed(4)},${event.lng.toFixed(4)}`
+    const existing = groups.get(key)
+    if (existing) {
+      existing.events.push(event)
+    } else {
+      groups.set(key, {
+        key,
+        lat: event.lat,
+        lng: event.lng,
+        venueName: event.venueName,
+        events: [event],
+      })
+    }
+  }
+
+  return Array.from(groups.values())
+}
+
 function App() {
   const [events, setEvents] = useState<ConcertEvent[]>([])
   const [error, setError] = useState<string | null>(null)
@@ -29,6 +63,8 @@ function App() {
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false))
   }, [])
+
+  const venues = useMemo(() => groupByVenue(events), [events])
 
   return (
     <>
@@ -42,25 +78,28 @@ function App() {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {events.map((event) => (
-          <Marker key={event.id} position={[event.lat, event.lng]}>
-            <Popup>
-              <strong>{event.name}</strong>
-              <br />
-              {event.venueName}
-              {event.date && (
-                <>
-                  <br />
-                  {event.date}
-                </>
-              )}
-              <br />
-              <a href={event.url} target="_blank" rel="noreferrer">
-                Tickets
-              </a>
-            </Popup>
-          </Marker>
-        ))}
+        <MarkerClusterGroup chunkedLoading>
+          {venues.map((venue) => (
+            <Marker key={venue.key} position={[venue.lat, venue.lng]}>
+              <Popup maxHeight={250}>
+                <strong>{venue.venueName}</strong>
+                <ul className="venue-event-list">
+                  {venue.events.map((event) => (
+                    <li key={event.id}>
+                      {event.date && <span className="event-date">{event.date}</span>}
+                      {' — '}
+                      {event.name}
+                      {' '}
+                      <a href={event.url} target="_blank" rel="noreferrer">
+                        Tickets
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </Popup>
+            </Marker>
+          ))}
+        </MarkerClusterGroup>
       </MapContainer>
     </>
   )

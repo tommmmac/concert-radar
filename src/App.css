@@ -4,6 +4,25 @@ html, body, #root {
   height: 100%;
 }
 
+.venue-event-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+}
+
+.venue-event-list li {
+  padding: 4px 0;
+  border-top: 1px solid #eee;
+}
+
+.venue-event-list li:first-child {
+  border-top: none;
+}
+
+.event-date {
+  font-weight: 600;
+}
+
 .status-banner {
   position: absolute;
   top: 12px;
