@@ -9,7 +9,8 @@ import 'leaflet/dist/leaflet.css'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import './App.css'
-import { fetchNearbyConcerts, type ConcertEvent } from './lib/ticketmaster'
+import { getNearbyConcerts } from './lib/events'
+import type { ConcertEvent } from './lib/ticketmaster'
 
 // Leaflet's default marker icon paths break under Vite's bundling; point them at the bundled assets.
 delete (L.Icon.Default.prototype as unknown as { _getIconUrl?: unknown })._getIconUrl
@@ -58,7 +59,7 @@ function App() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchNearbyConcerts(MELBOURNE[0], MELBOURNE[1])
+    getNearbyConcerts(MELBOURNE[0], MELBOURNE[1])
       .then(setEvents)
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false))

@@ -2,6 +2,7 @@
 
 interface ImportMetaEnv {
   readonly VITE_TICKETMASTER_API_KEY: string
+  readonly VITE_USE_MOCK_DATA: string
 }
 
 interface ImportMeta {
