@@ -18,11 +18,11 @@ PR and push to `main`.
 Plain `npm run dev` does not serve `/api` routes. To exercise the Spotify
 function locally, use `npx vercel dev` instead (requires `npx vercel
 login` once) — it serves the Vite frontend and the Vercel functions
-together. `vercel dev` reads server-side env vars from **`.env`**, not
-`.env.local` — Vite's own dev server reads `.env.local` for the frontend,
-so the two need to be kept in sync (or just use `.env` for everything).
+together. Both read env vars from the same `.env` file (Vite and
+`vercel dev` disagree on `.env.local`, so this project uses plain
+`.env` for everything, gitignored as usual).
 
-### Env vars (`.env.local`, see `.env.local.example`)
+### Env vars (`.env`, see `.env.example`)
 
 - `VITE_TICKETMASTER_API_KEY` — required for live data (free at developer.ticketmaster.com)
 - `VITE_USE_MOCK_DATA` — set `true` to develop against fixture data in

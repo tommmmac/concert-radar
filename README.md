@@ -29,30 +29,27 @@ of newly announced shows, venue-by-venue event listings, and city search.
 
 ```bash
 npm install
-cp .env.local.example .env.local
+cp .env.example .env
 ```
 
-Add your Ticketmaster API key to `.env.local` (free at
+Add your Ticketmaster API key to `.env` (free at
 [developer.ticketmaster.com](https://developer.ticketmaster.com/)), then:
 
 ```bash
 npm run dev
 ```
 
-Set `VITE_USE_MOCK_DATA=true` in `.env.local` to develop against fixture
+Set `VITE_USE_MOCK_DATA=true` in `.env` to develop against fixture
 data instead of the live API.
 
 ### Testing the Spotify integration locally
 
 `npm run dev` (plain Vite) doesn't serve `/api` routes. To test artist
 images/previews locally, add `SPOTIFY_CLIENT_ID` and
-`SPOTIFY_CLIENT_SECRET` to **`.env`** (free app at
-[developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)) —
-note: plain `.env`, not `.env.local`. `vercel dev` only reads `.env` for
-the API functions; Vite itself reads `.env.local` for the frontend, so
-keep the two in sync (or just put everything in `.env`). Then run the app
-through the Vercel CLI, which serves the frontend and `/api` functions
-together:
+`SPOTIFY_CLIENT_SECRET` to `.env` (free app at
+[developer.spotify.com/dashboard](https://developer.spotify.com/dashboard)),
+then run the app through the Vercel CLI instead, which serves the
+frontend and `/api` functions together:
 
 ```bash
 npx vercel login   # one-time, opens a browser
