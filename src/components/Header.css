@@ -19,9 +19,9 @@
 }
 
 .brand-mark {
-  font-size: 28px;
-  line-height: 1;
-  color: var(--color-live);
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
 }
 
 .brand {
@@ -34,7 +34,7 @@
 .tagline {
   margin: 2px 0 0;
   font-size: 13px;
-  color: #c4b5fd;
+  color: #8fd3de;
 }
 
 .header-nav {
@@ -48,7 +48,7 @@
 .nav-link {
   padding: 6px 16px;
   border-radius: 999px;
-  color: #e9d5ff;
+  color: #ffb3dd;
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
