@@ -7,7 +7,7 @@ export interface LastFmArtistDetails {
 
 const API_KEY = import.meta.env.VITE_LASTFM_API_KEY
 const BASE_URL = 'https://ws.audioscrobbler.com/2.0/'
-const CACHE_NS = 'lastfm-artist'
+const CACHE_NS = 'lastfm-artist-v2' // bump when the cached shape/filtering changes, to invalidate stale entries
 
 // In-memory cache for the current session (fastest); falls back to a
 // localStorage-backed cache so lookups survive a page reload too.
@@ -63,7 +63,20 @@ async function lookupArtist(artistName: string): Promise<LastFmArtistDetails | n
   const withoutReadMoreLink = rawSummary.replace(/<a[^>]*>.*?<\/a>\.?/i, '')
   const bio = withoutReadMoreLink.replace(/<[^>]+>/g, '').trim() || null
 
-  const tags = (data.artist.tags?.tag ?? []).map((t) => t.name).slice(0, 3)
+  const tags = (data.artist.tags?.tag ?? [])
+    .map((t) => t.name)
+    .filter(isLikelyGenreTag)
+    .slice(0, 3)
 
   return { bio, tags }
+}
+
+// Last.fm tags are arbitrary user-submitted strings, not a curated genre
+// list — some tools tag artists as a side effect of their own bookkeeping
+// (e.g. "funk_add_to_lidarr_batch_6" from a Lidarr import script). Real
+// genre tags are essentially always plain words/phrases, so reject
+// anything with digits or underscores rather than trying to denylist
+// every possible junk pattern.
+export function isLikelyGenreTag(tag: string): boolean {
+  return /^[a-z\s-]+$/i.test(tag)
 }
