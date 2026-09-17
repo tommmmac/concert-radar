@@ -15,6 +15,13 @@ There is no test suite yet. `npm run build` (type-check + build) is the
 main correctness gate; CI runs `npm run lint` and `npm run build` on every
 PR and push to `main`.
 
+Plain `npm run dev` does not serve `/api` routes. To exercise the Spotify
+function locally, use `npx vercel dev` instead (requires `npx vercel
+login` once) — it serves the Vite frontend and the Vercel functions
+together. `vercel dev` reads server-side env vars from **`.env`**, not
+`.env.local` — Vite's own dev server reads `.env.local` for the frontend,
+so the two need to be kept in sync (or just use `.env` for everything).
+
 ### Env vars (`.env.local`, see `.env.local.example`)
 
 - `VITE_TICKETMASTER_API_KEY` — required for live data (free at developer.ticketmaster.com)
@@ -22,6 +29,9 @@ PR and push to `main`.
   `src/lib/mockEvents.ts` instead of hitting the live API (useful for UI
   work without burning Ticketmaster's rate limit). Vite only reads env
   vars at startup — restart `npm run dev` after changing this.
+- `SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET` — server-only, no `VITE_`
+  prefix (see Architecture below for why that distinction matters here).
+  Free app at developer.spotify.com/dashboard.
 
 ## Architecture
 
@@ -68,6 +78,22 @@ required" watermark into free/anonymous tile responses.
 imported before any Leaflet marker renders — Vite's asset bundling
 breaks Leaflet's default icon URL resolution, and this patches
 `L.Icon.Default` to point at the bundled marker images.
+
+**`api/spotify-artist.ts` is the one server-side piece of this app.**
+Everything else fetches directly from the browser, but Spotify's Client
+Credentials flow requires a client secret that must never reach the
+client bundle (unlike Ticketmaster's key, which is safe client-side).
+This Vercel serverless function holds `SPOTIFY_CLIENT_ID`/`_SECRET`,
+exchanges them for an access token (cached in a module-level variable
+across warm invocations), looks up an artist by name, and returns only
+`{ name, imageUrl, previewUrl, spotifyUrl }` to the frontend — the raw
+Spotify token never leaves the server. `src/lib/spotify.ts` calls this
+endpoint with a client-side cache keyed by artist name, and
+`useSpotifyArtist` (a hook, since each `EventCard` needs its own
+per-artist fetch) wires it into the venue panel's event cards.
+`preview_url` is frequently `null` — Spotify has restricted 30-second
+previews for most tracks — so the card hides the player when absent
+rather than assuming one exists.
 
 **Routing**: `App.tsx` defines routes nested under a shared `Layout`
 (header + footer chrome): `/` → `NewsPage`, `/map` → `MapPage`, `/about`
