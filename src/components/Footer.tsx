@@ -4,7 +4,7 @@ import './Footer.css'
 function Footer() {
   return (
     <footer className="app-footer">
-      <span>Concert Radar — a portfolio project</span>
+      <span>Concert Radar — Built for finding the next show</span>
       <nav className="footer-links">
         <Link to="/about">About</Link>
         <a href="https://github.com/tommmmac/concert-radar" target="_blank" rel="noreferrer">
