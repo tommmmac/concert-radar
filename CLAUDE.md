@@ -32,6 +32,9 @@ so the two need to be kept in sync (or just use `.env` for everything).
 - `SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET` — server-only, no `VITE_`
   prefix (see Architecture below for why that distinction matters here).
   Free app at developer.spotify.com/dashboard.
+- `VITE_LASTFM_API_KEY` — client-side safe (read-only, no secret involved),
+  unlike the Spotify credentials above. Free key at
+  last.fm/api/account/create.
 
 ## Architecture
 
@@ -94,6 +97,18 @@ per-artist fetch) wires it into the venue panel's event cards.
 `preview_url` is frequently `null` — Spotify has restricted 30-second
 previews for most tracks — so the card hides the player when absent
 rather than assuming one exists.
+
+**`lib/lastfm.ts` is a separate, client-side-safe integration** — unlike
+Spotify, Last.fm's `artist.getinfo` endpoint only needs a public API key
+(no secret), so it's called directly from the browser and does not go
+through `/api`. It supplies both the genre pills and the click-to-expand
+bio on each `EventCard`, from a single request (`useArtistDetails`
+hook). Note: Spotify's artist `genres` field was tried first and dropped
+— it now returns empty consistently (even for major artists), a known
+recent Spotify API regression — so Last.fm's community tags are the
+actual genre source, not Spotify. Genre pill colors are deterministic,
+hashed from the genre string (`lib/genreColor.ts`), not a maintained
+palette, since there's no fixed list of possible genre tags.
 
 **Routing**: `App.tsx` defines routes nested under a shared `Layout`
 (header + footer chrome): `/` → `NewsPage`, `/map` → `MapPage`, `/about`

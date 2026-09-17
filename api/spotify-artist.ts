@@ -77,7 +77,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const searchData = (await searchRes.json()) as {
-      artists: { items: Array<{ name: string; images: Array<{ url: string }>; external_urls: { spotify: string } }> }
+      artists: {
+        items: Array<{ name: string; images: Array<{ url: string }>; external_urls: { spotify: string } }>
+      }
     }
 
     const artist = searchData.artists.items[0]

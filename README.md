@@ -13,6 +13,7 @@ of newly announced shows, venue-by-venue event listings, and city search.
   location" option
 - Mock data mode for UI work without hitting API rate limits
 - Artist images and preview clips (via Spotify) on venue event cards
+- Genre pills and a click-to-expand artist bio (via Last.fm) on event cards
 
 ## Tech stack
 
@@ -72,7 +73,8 @@ npx vercel dev
 - [ ] Real music news feed via RSS (Pitchfork, NME, Rolling Stone Music),
       replacing the current "recently added events" feed
 - [ ] Setlist.fm API — show what an artist played last time at a venue
-- [ ] Last.fm API — trending artists / "trending near you"
+- [x] Last.fm API — genre pills + artist bio (still want: trending
+      artists / "trending near you")
 
 **Later:**
 - [ ] Genre and date-range filters

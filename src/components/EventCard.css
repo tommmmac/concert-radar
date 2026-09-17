@@ -29,9 +29,52 @@
 }
 
 .event-card-name {
+  display: block;
   margin: 0 0 8px;
   font-size: 14px;
   line-height: 1.35;
+  font-weight: 600;
+}
+
+button.event-card-name {
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.event-card-name--clickable {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+}
+
+.event-card-name--clickable:hover {
+  color: var(--color-accent-strong);
+}
+
+.event-card-genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.genre-pill {
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.event-card-bio {
+  margin: 0 0 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
 }
 
 .event-card-preview {
