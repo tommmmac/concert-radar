@@ -1,0 +1,50 @@
+.map-page {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.map-page .map-card,
+.map-page .venue-panel {
+  align-self: stretch;
+}
+
+.map-card {
+  flex: 1;
+  min-width: 0;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+/* Leaflet's default container background is light gray, which flashes as a
+   pale box at the map edges while tiles load during pan/zoom. Match the dark
+   basemap instead so that gap is invisible. */
+.map-card .leaflet-container {
+  background: #3a3d40;
+}
+
+/* Marker cluster theming, overriding leaflet.markercluster's default green/yellow/orange */
+.marker-cluster-small,
+.marker-cluster-medium,
+.marker-cluster-large {
+  background-color: rgba(124, 58, 237, 0.35);
+}
+
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+  background-color: var(--color-accent);
+  color: white;
+  font-weight: 600;
+}
+
+@media (max-width: 760px) {
+  .map-page {
+    flex-direction: column;
+  }
+
+  .map-card {
+    width: 100%;
+  }
+}
