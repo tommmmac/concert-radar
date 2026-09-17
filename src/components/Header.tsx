@@ -5,9 +5,7 @@ function Header() {
   return (
     <header className="app-header">
       <Link to="/" className="header-brand">
-        <span className="brand-mark" aria-hidden="true">
-          ◎
-        </span>
+        <img className="brand-mark" src="/favicon.svg" alt="" aria-hidden="true" />
         <div>
           <h1 className="brand">Concert Radar</h1>
           <p className="tagline">Live music happening near you</p>

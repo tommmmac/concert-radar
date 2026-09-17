@@ -19,9 +19,9 @@
 }
 
 .brand-mark {
-  font-size: 28px;
-  line-height: 1;
-  color: var(--color-live);
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
 }
 
 .brand {
