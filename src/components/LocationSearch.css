@@ -72,7 +72,7 @@
 }
 
 .location-search-geo:hover:not(:disabled) {
-  background: #faf5ff;
+  background: #fdeef6;
   border-color: var(--color-accent);
 }
 
