@@ -8,12 +8,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 npm run dev      # start Vite dev server
 npm run build    # tsc -b type-check, then vite build
 npm run lint      # oxlint
+npm test          # vitest run (one-shot; use `npx vitest` for watch mode)
 npm run preview   # preview a production build locally
 ```
 
-There is no test suite yet. `npm run build` (type-check + build) is the
-main correctness gate; CI runs `npm run lint` and `npm run build` on every
-PR and push to `main`.
+Tests are colocated with the code they cover (`foo.ts` → `foo.test.ts`),
+not in a separate `tests/` folder — keeps a test in view whenever you
+touch its source. Vitest environment is plain `node` (no jsdom/DOM
+testing set up yet); it's for pure logic (`lib/*.ts`), not components.
+CI runs `npm run lint`, `npm test`, and `npm run build` on every PR and
+push to `main`.
 
 Plain `npm run dev` does not serve `/api` routes. To exercise the Spotify
 function locally, use `npx vercel dev` instead (requires `npx vercel
