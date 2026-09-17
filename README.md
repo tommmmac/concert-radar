@@ -61,3 +61,7 @@ data instead of the live API.
       querying Ticketmaster live on every request, for scale and stronger
       rate-limit headroom
 - [ ] Deploy (Vercel)
+
+## License
+
+[MIT](LICENSE)
