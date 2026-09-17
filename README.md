@@ -67,9 +67,11 @@ domains before the first request fires.
 ## Development workflow
 
 - Work happens on feature branches, merged into `main` via PR
-- `main` is branch-protected: PRs required, CI (lint + build) must pass,
-  linear history only (squash-merge), no force-push/delete
-- `npm run lint` / `npm run build` before opening a PR
+- `main` is branch-protected: PRs required, CI (lint + test + build) must
+  pass, linear history only (squash-merge), no force-push/delete
+- `npm run lint` / `npm test` / `npm run build` before opening a PR
+- Tests use Vitest, colocated next to the code they cover (`foo.test.ts`
+  beside `foo.ts`)
 
 ## Roadmap / TODO
 
