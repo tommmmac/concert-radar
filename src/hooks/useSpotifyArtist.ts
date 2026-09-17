@@ -3,13 +3,17 @@ import { fetchArtistInfo, type SpotifyArtistInfo } from '../lib/spotify'
 
 export function useSpotifyArtist(artistName: string) {
   const [artist, setArtist] = useState<SpotifyArtistInfo | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     let cancelled = false
+    setLoading(true)
     setArtist(null)
 
     fetchArtistInfo(artistName).then((result) => {
-      if (!cancelled) setArtist(result)
+      if (cancelled) return
+      setArtist(result)
+      setLoading(false)
     })
 
     return () => {
@@ -17,5 +21,5 @@ export function useSpotifyArtist(artistName: string) {
     }
   }, [artistName])
 
-  return artist
+  return { artist, loading }
 }

@@ -10,19 +10,21 @@ interface EventCardProps {
 }
 
 function EventCard({ event }: EventCardProps) {
-  const artist = useSpotifyArtist(event.name)
-  const details = useArtistDetails(event.name)
+  const { artist, loading: artistLoading } = useSpotifyArtist(event.name)
+  const { details, loading: detailsLoading } = useArtistDetails(event.name)
   const [bioOpen, setBioOpen] = useState(false)
 
   return (
     <div className="event-card">
-      {artist?.imageUrl && (
-        <img className="event-card-artist-image" src={artist.imageUrl} alt="" />
+      {artistLoading ? (
+        <div className="event-card-artist-image event-card-artist-image--skeleton" />
+      ) : (
+        artist?.imageUrl && <img className="event-card-artist-image" src={artist.imageUrl} alt="" />
       )}
       <div className="event-card-body">
         {event.date && <span className="event-card-date">{event.date}</span>}
 
-        {details?.bio ? (
+        {!detailsLoading && details?.bio ? (
           <button
             className="event-card-name event-card-name--clickable"
             onClick={() => setBioOpen((open) => !open)}
@@ -53,7 +55,6 @@ function EventCard({ event }: EventCardProps) {
 
         {bioOpen && details?.bio && <p className="event-card-bio">{details.bio}</p>}
 
-        {artist?.previewUrl && <audio className="event-card-preview" controls src={artist.previewUrl} />}
         <a className="event-card-link" href={event.url} target="_blank" rel="noreferrer">
           Tickets
         </a>

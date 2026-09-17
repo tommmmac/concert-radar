@@ -1,3 +1,5 @@
+import { readCache, writeCache } from './persistentCache'
+
 export interface LastFmArtistDetails {
   bio: string | null
   tags: string[]
@@ -5,18 +7,32 @@ export interface LastFmArtistDetails {
 
 const API_KEY = import.meta.env.VITE_LASTFM_API_KEY
 const BASE_URL = 'https://ws.audioscrobbler.com/2.0/'
+const CACHE_NS = 'lastfm-artist'
 
-// Module-level cache so switching venues/reopening a panel doesn't
-// re-request an artist we've already looked up this session.
-const cache = new Map<string, Promise<LastFmArtistDetails | null>>()
+// In-memory cache for the current session (fastest); falls back to a
+// localStorage-backed cache so lookups survive a page reload too.
+const memoryCache = new Map<string, Promise<LastFmArtistDetails | null>>()
 
 export function fetchArtistDetails(artistName: string): Promise<LastFmArtistDetails | null> {
   const key = artistName.trim().toLowerCase()
-  const cached = cache.get(key)
-  if (cached) return cached
 
-  const promise = lookupArtist(artistName).catch(() => null)
-  cache.set(key, promise)
+  const inMemory = memoryCache.get(key)
+  if (inMemory) return inMemory
+
+  const persisted = readCache<LastFmArtistDetails | null>(CACHE_NS, key)
+  if (persisted !== undefined) {
+    const resolved = Promise.resolve(persisted)
+    memoryCache.set(key, resolved)
+    return resolved
+  }
+
+  const promise = lookupArtist(artistName)
+    .then((result) => {
+      writeCache(CACHE_NS, key, result)
+      return result
+    })
+    .catch(() => null)
+  memoryCache.set(key, promise)
   return promise
 }
 

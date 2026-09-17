@@ -86,17 +86,25 @@ breaks Leaflet's default icon URL resolution, and this patches
 Everything else fetches directly from the browser, but Spotify's Client
 Credentials flow requires a client secret that must never reach the
 client bundle (unlike Ticketmaster's key, which is safe client-side).
-This Vercel serverless function holds `SPOTIFY_CLIENT_ID`/`_SECRET`,
-exchanges them for an access token (cached in a module-level variable
-across warm invocations), looks up an artist by name, and returns only
-`{ name, imageUrl, previewUrl, spotifyUrl }` to the frontend — the raw
-Spotify token never leaves the server. `src/lib/spotify.ts` calls this
-endpoint with a client-side cache keyed by artist name, and
-`useSpotifyArtist` (a hook, since each `EventCard` needs its own
-per-artist fetch) wires it into the venue panel's event cards.
-`preview_url` is frequently `null` — Spotify has restricted 30-second
-previews for most tracks — so the card hides the player when absent
-rather than assuming one exists.
+This Vercel serverless function (with shared token logic in
+`api/_spotifyAuth.ts` — the `_` prefix tells Vercel it's not a route)
+holds `SPOTIFY_CLIENT_ID`/`_SECRET`, exchanges them for an access token
+(cached in a module-level variable across warm invocations), looks up
+an artist by name, and returns only `{ name, imageUrl, spotifyUrl }` to
+the frontend — the raw Spotify token never leaves the server.
+`src/lib/spotify.ts` calls this endpoint with a two-tier cache
+(in-memory, then `localStorage` with a 24h TTL via
+`lib/persistentCache.ts`), and `useSpotifyArtist` (a hook, since each
+`EventCard` needs its own per-artist fetch) wires it into the venue
+panel's event cards, exposing a `loading` flag so the card can render a
+skeleton placeholder instead of a layout jump.
+
+Preview clips were tried and removed — Spotify's "Get Artist's Top
+Tracks" endpoint (needed to find a `preview_url`) returned 403 for this
+app even though "Get Artist" worked fine with the same token; that
+endpoint is restricted to apps manually approved for Extended Quota
+Mode. Don't re-add a preview feature without that approval — it will
+fail 100% of the time, not just for tracks lacking a clip.
 
 **`lib/lastfm.ts` is a separate, client-side-safe integration** — unlike
 Spotify, Last.fm's `artist.getinfo` endpoint only needs a public API key
