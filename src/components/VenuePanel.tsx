@@ -1,4 +1,5 @@
 import type { VenueGroup } from '../lib/venues'
+import EventCard from './EventCard'
 import './VenuePanel.css'
 
 interface VenuePanelProps {
@@ -25,13 +26,7 @@ function VenuePanel({ venue, onClose }: VenuePanelProps) {
       </div>
       <div className="venue-panel-list">
         {venue.events.map((event) => (
-          <div key={event.id} className="event-card">
-            {event.date && <span className="event-card-date">{event.date}</span>}
-            <h3 className="event-card-name">{event.name}</h3>
-            <a className="event-card-link" href={event.url} target="_blank" rel="noreferrer">
-              Tickets
-            </a>
-          </div>
+          <EventCard key={event.id} event={event} />
         ))}
       </div>
     </aside>

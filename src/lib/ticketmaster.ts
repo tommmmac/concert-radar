@@ -34,7 +34,7 @@ export async function fetchNearbyConcerts(
   radiusKm = 25,
 ): Promise<ConcertEvent[]> {
   if (!API_KEY || API_KEY === 'your_key_here') {
-    throw new Error('Missing VITE_TICKETMASTER_API_KEY — set it in .env.local')
+    throw new Error('Missing VITE_TICKETMASTER_API_KEY — set it in .env')
   }
 
   const params = new URLSearchParams({
