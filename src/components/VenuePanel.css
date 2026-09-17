@@ -7,6 +7,10 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
   overflow: hidden;
+  /* Without this, a stretched flex item's min-height defaults to its
+     content size, so the list below never actually clips/scrolls —
+     it just grows the whole panel (and page) instead. */
+  min-height: 0;
 }
 
 .venue-panel--empty {

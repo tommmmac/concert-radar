@@ -1,20 +1,27 @@
 .map-page {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 20px;
-}
-
-.map-page .map-card,
-.map-page .venue-panel {
-  align-self: stretch;
+  /* A definite height here is required — without it, .map-card and
+     .venue-panel (both align-self: stretch) have nothing but each
+     other to stretch against, so a long venue panel list drags the
+     whole row (and the map) up to match its content height instead
+     of scrolling within its own box. */
+  height: 78vh;
+  min-height: 560px;
 }
 
 .map-card {
   flex: 1;
   min-width: 0;
+  height: 100%;
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-md);
+}
+
+.map-card .leaflet-container {
+  height: 100%;
 }
 
 /* Leaflet's default container background is light gray, which flashes as a
