@@ -25,7 +25,7 @@ function MapPage() {
           key={`${location.lat},${location.lng}`}
           center={[location.lat, location.lng]}
           zoom={12}
-          style={{ height: '78vh', minHeight: '560px', width: '100%' }}
+          style={{ height: '100%', width: '100%' }}
         >
           <TileLayer
             attribution='Tiles &copy; Esri'

@@ -1,5 +1,7 @@
+import { useMemo } from 'react'
 import type { VenueGroup } from '../lib/venues'
-import EventCard from './EventCard'
+import { groupByArtist } from '../lib/artists'
+import ArtistCard from './ArtistCard'
 import './VenuePanel.css'
 
 interface VenuePanelProps {
@@ -8,6 +10,8 @@ interface VenuePanelProps {
 }
 
 function VenuePanel({ venue, onClose }: VenuePanelProps) {
+  const artists = useMemo(() => (venue ? groupByArtist(venue.events) : []), [venue])
+
   if (!venue) {
     return (
       <aside className="venue-panel venue-panel--empty">
@@ -25,8 +29,8 @@ function VenuePanel({ venue, onClose }: VenuePanelProps) {
         </button>
       </div>
       <div className="venue-panel-list">
-        {venue.events.map((event) => (
-          <EventCard key={event.id} event={event} />
+        {artists.map((artist) => (
+          <ArtistCard key={artist.key} artist={artist} />
         ))}
       </div>
     </aside>

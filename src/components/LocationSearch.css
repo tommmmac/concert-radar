@@ -1,6 +1,7 @@
 .location-search {
   width: 260px;
   flex-shrink: 0;
+  align-self: flex-start;
   background: var(--color-surface);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
