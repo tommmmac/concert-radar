@@ -33,7 +33,7 @@ function Layout() {
   useEffect(() => {
     setLoading(true)
     setError(null)
-    getNearbyConcerts(location.lat, location.lng)
+    getNearbyConcerts(location)
       .then((fetched) => {
         setEvents(fetched)
         setNewEventIds(findNewEventIds(fetched.map((event) => event.id)))

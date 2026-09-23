@@ -13,6 +13,11 @@ function Privacy() {
         If you click "use my location", your browser asks for permission first. Your coordinates are only used to
         search for nearby events. They're sent to Ticketmaster for that search and aren't stored anywhere.
       </p>
+      <p>
+        When you search for a place, a rough version of the area you're currently viewing (rounded to about 10km) is
+        sent to OpenStreetMap along with what you typed, so that a name like "Cranbourne" finds the one near you. Your
+        precise location is never sent there.
+      </p>
 
       <h2>Stored in your browser</h2>
       <p>Concert Radar saves a few things in your browser's local storage so it works better next time:</p>

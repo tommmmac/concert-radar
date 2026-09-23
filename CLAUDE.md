@@ -81,6 +81,15 @@ and sort order (new first). Cards are revealed 12 at a time
 (`PAGE_SIZE` in `NewsFeed.tsx`) because each one triggers its own
 Spotify + Last.fm lookup.
 
+**Location search** (`lib/geocode.ts`): Nominatim with
+`featureType=settlement` (so "Cranbourne" isn't a railway station) and a
+`viewbox` bias around the current location (so it isn't the English
+village), labelled by the place's own name. If the place is an outer
+suburb of a bigger city (≥15km from its centre), `GeocodedLocation.city`
+is set and `lib/events.ts` fetches 25km around **both** points, tagging
+each event's `area` (`lib/areas.ts`). The News feed then splits into
+"In {city}" / "Near {suburb}" sections and the map frames both.
+
 **Dates**: always display event dates through `formatEventDate`
 (`lib/formatDate.ts`, e.g. "Friday 25th September 2026") rather than
 raw Ticketmaster `localDate` strings or `new Date(str)` — date-only

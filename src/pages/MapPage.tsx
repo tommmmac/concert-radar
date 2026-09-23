@@ -23,8 +23,16 @@ function MapPage() {
       <div className="map-card">
         <MapContainer
           key={`${location.lat},${location.lng}`}
-          center={[location.lat, location.lng]}
-          zoom={12}
+          // Outer suburb + its city: frame both. Otherwise centre on the place.
+          {...(location.city
+            ? {
+                bounds: [
+                  [location.lat, location.lng],
+                  [location.city.lat, location.city.lng],
+                ],
+                boundsOptions: { padding: [60, 60] },
+              }
+            : { center: [location.lat, location.lng], zoom: 12 })}
           style={{ height: '100%', width: '100%' }}
         >
           <TileLayer

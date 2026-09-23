@@ -20,7 +20,8 @@ function LocationSearch({ location, onLocationChange }: LocationSearchProps) {
     setSearching(true)
     setError(null)
     try {
-      const result = await geocodeCity(query.trim())
+      // Bias towards the area already being viewed, so "Cranbourne" means the one near here.
+      const result = await geocodeCity(query.trim(), location)
       if (!result) {
         setError('No matching location found')
       } else {

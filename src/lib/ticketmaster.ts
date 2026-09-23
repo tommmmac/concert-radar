@@ -6,6 +6,12 @@ export interface ConcertEvent {
   venueName: string
   lat: number
   lng: number
+  /**
+   * Which search found it, when a suburb search also covers its parent city
+   * (see `GeocodedLocation.city`): 'local' = near the suburb, 'city' = near
+   * the city centre. Unset for a normal single-area search.
+   */
+  area?: 'local' | 'city'
 }
 
 interface DiscoveryResponse {
@@ -28,10 +34,14 @@ interface DiscoveryResponse {
 const API_KEY = import.meta.env.VITE_TICKETMASTER_API_KEY
 const BASE_URL = 'https://app.ticketmaster.com/discovery/v2/events.json'
 
+// Outer suburbs reach their city's venues via a second search around the
+// city centre (lib/events.ts), so each search can stay local.
+const DEFAULT_RADIUS_KM = 25
+
 export async function fetchNearbyConcerts(
   lat: number,
   lng: number,
-  radiusKm = 25,
+  radiusKm = DEFAULT_RADIUS_KM,
 ): Promise<ConcertEvent[]> {
   if (!API_KEY || API_KEY === 'your_key_here') {
     throw new Error('Missing VITE_TICKETMASTER_API_KEY — set it in .env')
