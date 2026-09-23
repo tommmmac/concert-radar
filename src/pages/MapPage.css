@@ -31,6 +31,30 @@
   background: #3a3d40;
 }
 
+/* Record venue pins (lib/venueIcon.ts). Leaflet gives divIcons a white box
+   by default — clear it, and add a shadow + hover lift instead. */
+.venue-pin {
+  background: none;
+  border: none;
+}
+
+.venue-pin svg {
+  display: block;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.5));
+  transform-origin: 50% 100%; /* grow from the tip, which stays on the venue */
+  transition: transform 0.15s;
+}
+
+.venue-pin:hover svg {
+  transform: scale(1.15);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .venue-pin svg {
+    transition: none;
+  }
+}
+
 /* Marker cluster theming, overriding leaflet.markercluster's default green/yellow/orange */
 .marker-cluster-small,
 .marker-cluster-medium,
