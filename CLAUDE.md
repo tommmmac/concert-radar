@@ -106,10 +106,11 @@ stacked `TileLayer`s — Base + Reference for labels) was chosen
 deliberately over CartoDB's dark tiles, which now bake an "API key
 required" watermark into free/anonymous tile responses.
 
-**`lib/leafletIconFix.ts`** is a side-effect-only module that must be
-imported before any Leaflet marker renders — Vite's asset bundling
-breaks Leaflet's default icon URL resolution, and this patches
-`L.Icon.Default` to point at the bundled marker images.
+**Map pins** use a custom `L.divIcon` (`lib/venueIcon.ts`) — inline SVG
+of the logo record in a pink pin, so no image assets are involved. Pass
+`icon={venueIcon}` to every `<Marker>`: Leaflet's *default* icon is no
+longer patched for Vite (the old `leafletIconFix.ts` was removed), so a
+marker without an explicit icon would render as a broken image.
 
 **`api/spotify-artist.ts` is the one server-side piece of this app.**
 Everything else fetches directly from the browser, but Spotify's Client

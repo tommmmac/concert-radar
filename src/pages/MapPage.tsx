@@ -5,7 +5,7 @@ import { useOutletContext } from 'react-router-dom'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
-import '../lib/leafletIconFix'
+import { venueIcon } from '../lib/venueIcon'
 import type { AppContext } from '../components/Layout'
 import type { VenueGroup } from '../lib/venues'
 import VenuePanel from '../components/VenuePanel'
@@ -42,6 +42,7 @@ function MapPage() {
               <Marker
                 key={venue.key}
                 position={[venue.lat, venue.lng]}
+                icon={venueIcon}
                 eventHandlers={{ click: () => setSelectedVenue(venue) }}
               />
             ))}
