@@ -8,8 +8,8 @@
 }
 
 .news-card--new {
-  border-color: #f9c2df;
-  background: #fff7fb;
+  border-color: var(--color-accent-tint-border);
+  background: var(--color-accent-tint);
 }
 
 .news-card-image {
@@ -18,13 +18,6 @@
   flex-shrink: 0;
   border-radius: 8px;
   object-fit: cover;
-}
-
-.news-card-image--skeleton,
-.news-card-bio--skeleton {
-  background: linear-gradient(90deg, #efeff4 25%, #f7f7fa 37%, #efeff4 63%);
-  background-size: 400% 100%;
-  animation: skeleton-shimmer 1.4s ease infinite; /* keyframes live in ArtistCard.css */
 }
 
 .news-card-image--placeholder {
@@ -70,7 +63,7 @@
   margin: 4px 0 8px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--color-accent-strong);
+  color: var(--color-accent-text);
 }
 
 .news-card-genres {

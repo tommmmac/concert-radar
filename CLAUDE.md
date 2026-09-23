@@ -156,7 +156,18 @@ sharing `pages/InfoPage.css`). Keep `Privacy.tsx` in sync if you add new
 
 **Styling**: design tokens (colors, radii, shadows) live as CSS custom
 properties on `:root` in `src/index.css`; component-scoped CSS files
-consume them via `var(--color-accent)` etc.
+consume them via `var(--color-accent)` etc. Never hard-code a light
+colour in component CSS — use a token, so dark mode keeps working.
+
+**Theming**: light/dark via `data-theme` on `<html>`, with dark overrides
+in `:root[data-theme='dark']` (`index.css`). The header, footer and
+gradient banners use `--color-bg-*` and stay dark in both themes. An
+inline script in `index.html` picks the theme before first paint (saved
+choice in `localStorage`, else the device's `prefers-color-scheme`) —
+same rules as `resolveTheme()` in `lib/theme.ts`, so keep the two in
+sync. `ThemeToggle` (footer) flips and saves it. Genre pills get only a
+hue from `lib/genreColor.ts` (`--genre-hue`); `.genre-pill` sets
+lightness per theme.
 
 ## Workflow
 

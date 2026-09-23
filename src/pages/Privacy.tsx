@@ -24,6 +24,7 @@ function Privacy() {
       <ul>
         <li>The IDs of events you've already seen, so new ones can be flagged.</li>
         <li>Cached artist images, genres and bios (kept for 24 hours) to cut down on repeat lookups.</li>
+        <li>Your light/dark theme choice, if you've used the switch in the footer.</li>
       </ul>
       <p>
         This data never leaves your device. You can clear it at any time by clearing this site's data in your browser

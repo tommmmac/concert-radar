@@ -1,6 +1,7 @@
+import type { CSSProperties } from 'react'
 import { useSpotifyArtist } from '../hooks/useSpotifyArtist'
 import { useArtistDetails } from '../hooks/useArtistDetails'
-import { genreColor } from '../lib/genreColor'
+import { genreHue } from '../lib/genreColor'
 import { formatEventDate } from '../lib/formatDate'
 import { cleanArtistName } from '../lib/artistName'
 import type { ConcertEvent } from '../lib/ticketmaster'
@@ -20,7 +21,7 @@ function NewsCard({ event, isNew }: NewsCardProps) {
   return (
     <article className={isNew ? 'news-card news-card--new' : 'news-card'}>
       {artistLoading ? (
-        <div className="news-card-image news-card-image--skeleton" />
+        <div className="news-card-image skeleton" />
       ) : artist?.imageUrl ? (
         <img className="news-card-image" src={artist.imageUrl} alt="" />
       ) : (
@@ -40,19 +41,16 @@ function NewsCard({ event, isNew }: NewsCardProps) {
 
         {details && details.tags.length > 0 && (
           <div className="news-card-genres">
-            {details.tags.map((tag) => {
-              const color = genreColor(tag)
-              return (
-                <span key={tag} className="genre-pill" style={{ background: color.background, color: color.text }}>
-                  {tag}
-                </span>
-              )
-            })}
+            {details.tags.map((tag) => (
+              <span key={tag} className="genre-pill" style={{ '--genre-hue': genreHue(tag) } as CSSProperties}>
+                {tag}
+              </span>
+            ))}
           </div>
         )}
 
         {detailsLoading ? (
-          <div className="news-card-bio news-card-bio--skeleton" />
+          <div className="news-card-bio news-card-bio--skeleton skeleton" />
         ) : details?.bio ? (
           <p className="news-card-bio">{details.bio}</p>
         ) : (
