@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useSpotifyArtist } from '../hooks/useSpotifyArtist'
 import { useArtistDetails } from '../hooks/useArtistDetails'
 import { genreColor } from '../lib/genreColor'
+import { formatEventDate } from '../lib/formatDate'
 import type { ArtistGroup } from '../lib/artists'
 import './ArtistCard.css'
 
@@ -60,7 +61,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
         <ul className="artist-card-dates">
           {artist.events.map((event) => (
             <li key={event.id}>
-              <span>{event.date ?? 'Date TBA'}</span>
+              <span>{formatEventDate(event.date)}</span>
               <a href={event.url} target="_blank" rel="noreferrer">
                 Tickets
               </a>

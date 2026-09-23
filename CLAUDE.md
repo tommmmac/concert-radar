@@ -75,7 +75,16 @@ rendered as a scrollable list of event cards in `VenuePanel`.
 feed diffs freshly fetched event IDs against a set persisted in
 `localStorage`. On a genuinely first-ever visit nothing is flagged new
 (to avoid flooding the feed with everything on load) — only IDs that
-appear after a seed set already exists get the "New" badge.
+appear after a seed set already exists get the "New" badge. The feed
+still lists every event, not just new ones: new IDs only drive the badge
+and sort order (new first). Cards are revealed 12 at a time
+(`PAGE_SIZE` in `NewsFeed.tsx`) because each one triggers its own
+Spotify + Last.fm lookup.
+
+**Dates**: always display event dates through `formatEventDate`
+(`lib/formatDate.ts`, e.g. "Friday 25th September 2026") rather than
+raw Ticketmaster `localDate` strings or `new Date(str)` — date-only
+strings parse as UTC and can land on the wrong day.
 
 **Map tiles**: Esri's free World Dark Gray Canvas (`MapPage.tsx`, two
 stacked `TileLayer`s — Base + Reference for labels) was chosen
@@ -100,9 +109,10 @@ the frontend — the raw Spotify token never leaves the server.
 `src/lib/spotify.ts` calls this endpoint with a two-tier cache
 (in-memory, then `localStorage` with a 24h TTL via
 `lib/persistentCache.ts`), and `useSpotifyArtist` (a hook, since each
-`EventCard` needs its own per-artist fetch) wires it into the venue
-panel's event cards, exposing a `loading` flag so the card can render a
-skeleton placeholder instead of a layout jump.
+card needs its own per-artist fetch) wires it into both the venue
+panel's `ArtistCard`s and the News feed's `NewsCard`s, exposing a
+`loading` flag so the card can render a skeleton placeholder instead of
+a layout jump.
 
 Preview clips were tried and removed — Spotify's "Get Artist's Top
 Tracks" endpoint (needed to find a `preview_url`) returned 403 for this
@@ -114,9 +124,9 @@ fail 100% of the time, not just for tracks lacking a clip.
 **`lib/lastfm.ts` is a separate, client-side-safe integration** — unlike
 Spotify, Last.fm's `artist.getinfo` endpoint only needs a public API key
 (no secret), so it's called directly from the browser and does not go
-through `/api`. It supplies both the genre pills and the click-to-expand
-bio on each `EventCard`, from a single request (`useArtistDetails`
-hook). Note: Spotify's artist `genres` field was tried first and dropped
+through `/api`. It supplies both the genre pills and the bio (click to
+expand on `ArtistCard`, a 3-line excerpt on `NewsCard`), from a single
+request (`useArtistDetails` hook). Note: Spotify's artist `genres` field was tried first and dropped
 — it now returns empty consistently (even for major artists), a known
 recent Spotify API regression — so Last.fm's community tags are the
 actual genre source, not Spotify. Genre pill colors are deterministic,

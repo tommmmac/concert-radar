@@ -7,6 +7,8 @@ function NewsPage() {
 
   return (
     <NewsFeed
+      // Remount on a new search so "Show more" starts back at the first page.
+      key={`${location.lat},${location.lng}`}
       loading={loading}
       error={error}
       events={events}
