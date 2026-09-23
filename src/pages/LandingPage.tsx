@@ -1,5 +1,6 @@
 import { Link, useOutletContext } from 'react-router-dom'
 import type { AppContext } from '../components/Layout'
+import RadarPing from '../components/RadarPing'
 import './LandingPage.css'
 
 const FEATURES = [
@@ -26,6 +27,9 @@ function LandingPage() {
   return (
     <div className="landing">
       <section className="landing-hero">
+        <div className="landing-radar">
+          <RadarPing />
+        </div>
         <p className="landing-eyebrow">
           <span className="pulse-dot" aria-hidden="true" />
           Live music radar

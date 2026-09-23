@@ -1,0 +1,141 @@
+/* Sits on the landing hero's dark gradient in both themes, so it uses fixed
+   neon colours rather than themed tokens. */
+.radar {
+  --radar-line: rgba(255, 46, 166, 0.22);
+  --radar-sweep-duration: 4s; /* keep in sync with SWEEP_SECONDS in RadarPing.tsx */
+
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  overflow: hidden;
+  background: radial-gradient(circle, rgba(255, 46, 166, 0.08), transparent 70%);
+}
+
+/* Range rings + crosshair, all from gradients on one element. */
+.radar-rings {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--radar-line);
+  background:
+    radial-gradient(circle, transparent 24.5%, var(--radar-line) 25%, transparent 25.5%),
+    radial-gradient(circle, transparent 49.5%, var(--radar-line) 50%, transparent 50.5%),
+    radial-gradient(circle, transparent 74%, var(--radar-line) 74.5%, transparent 75%),
+    linear-gradient(var(--radar-line), var(--radar-line)) center / 1px 100% no-repeat,
+    linear-gradient(var(--radar-line), var(--radar-line)) center / 100% 1px no-repeat;
+}
+
+/* The beam: a conic gradient whose bright edge is at 12 o'clock, fading
+   anticlockwise behind it — rotating the element sweeps it round. */
+.radar-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  /* Long, faint trail (~110°) that eases in, then a thin bright leading
+     edge — a short, strong trail reads as a solid pie slice instead. */
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg 250deg,
+    rgba(255, 46, 166, 0.04) 290deg,
+    rgba(255, 46, 166, 0.12) 330deg,
+    rgba(255, 46, 166, 0.28) 356deg,
+    rgba(255, 108, 191, 0.85) 359.5deg,
+    transparent 360deg
+  );
+  animation: radar-spin var(--radar-sweep-duration) linear infinite;
+}
+
+.radar-centre {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 12px var(--color-accent);
+}
+
+/* A venue blip: dim until the beam passes, then flashes and sends out a ring.
+   Its animation-delay (set inline) times that to the sweep. */
+.radar-blip {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: var(--color-live);
+  opacity: 0.25;
+  animation: radar-blip var(--radar-sweep-duration) ease-out infinite;
+}
+
+.radar-blip::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--color-live);
+  opacity: 0;
+  animation: radar-ping var(--radar-sweep-duration) ease-out infinite;
+  animation-delay: inherit;
+}
+
+@keyframes radar-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Like a real radar screen: the blip lights up at full brightness the
+   instant the beam crosses it (0%), then its glow slowly decays until the
+   next sweep. The peak has to be at the hit — if the most visible moment
+   comes later, the ping reads as lagging behind the beam. */
+@keyframes radar-blip {
+  0% {
+    opacity: 1;
+    transform: scale(1.6);
+    box-shadow: 0 0 16px 2px var(--color-live);
+  }
+  6% {
+    transform: scale(1);
+  }
+  60%,
+  100% {
+    opacity: 0.25;
+    transform: scale(1);
+    box-shadow: none;
+  }
+}
+
+/* A quick ring off the hit (~0.6s), rather than a slow one whose biggest
+   moment lands well after the beam has moved on. */
+@keyframes radar-ping {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  15%,
+  100% {
+    opacity: 0;
+    transform: scale(4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .radar-sweep,
+  .radar-blip,
+  .radar-blip::after {
+    animation: none;
+  }
+
+  .radar-sweep {
+    transform: rotate(40deg); /* frozen mid-sweep so it still reads as a radar */
+  }
+
+  .radar-blip {
+    opacity: 0.8;
+    box-shadow: 0 0 10px var(--color-live);
+  }
+}

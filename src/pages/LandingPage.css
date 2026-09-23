@@ -17,6 +17,22 @@
   box-shadow: var(--shadow-lg);
 }
 
+.landing-radar {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: clamp(420px, 40vw, 600px);
+  /* Centre the radar on the hero's right edge, so the hero's overflow:hidden
+     crops its right half — it reads as a big scan running off the page. */
+  transform: translate(50%, -50%);
+  pointer-events: none;
+}
+
+/* Hero text stacks above the radar when they overlap on narrower screens. */
+.landing-hero > :not(.landing-radar) {
+  position: relative;
+}
+
 .landing-eyebrow {
   display: inline-flex;
   align-items: center;
@@ -119,6 +135,13 @@
   margin: 0;
   color: var(--color-text-muted);
   line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .landing-radar {
+    width: 380px;
+    opacity: 0.35;
+  }
 }
 
 @media (max-width: 600px) {
