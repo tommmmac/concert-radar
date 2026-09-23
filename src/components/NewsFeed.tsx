@@ -1,6 +1,12 @@
+import { useState } from 'react'
 import type { ConcertEvent } from '../lib/ticketmaster'
 import type { GeocodedLocation } from '../lib/geocode'
+import NewsCard from './NewsCard'
 import './NewsFeed.css'
+
+// Each card triggers a Spotify + Last.fm lookup, so reveal the feed in pages
+// rather than firing hundreds of requests for a 200-event city at once.
+const PAGE_SIZE = 12
 
 interface NewsFeedProps {
   loading: boolean
@@ -12,7 +18,13 @@ interface NewsFeedProps {
 }
 
 function NewsFeed({ loading, error, events, venueCount, newEventIds, location }: NewsFeedProps) {
-  const newEvents = events.filter((event) => newEventIds.has(event.id))
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
+
+  // New announcements first; sort is stable, so each group keeps the API's date order.
+  const sortedEvents = [...events].sort(
+    (a, b) => Number(newEventIds.has(b.id)) - Number(newEventIds.has(a.id)),
+  )
+  const newCount = newEventIds.size
 
   return (
     <section className="news-feed">
@@ -33,27 +45,29 @@ function NewsFeed({ loading, error, events, venueCount, newEventIds, location }:
       </div>
 
       {!loading && !error && (
-        <div className="news-feed-items">
-          {newEvents.length === 0 ? (
-            <p className="news-feed-empty">You're all caught up — check back later for new announcements.</p>
-          ) : (
-            newEvents.map((event) => (
-              <a
-                key={event.id}
-                className="news-feed-item"
-                href={event.url}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <span className="news-feed-badge">New</span>
-                <span>
-                  <strong>{event.name}</strong> at {event.venueName}
-                  {event.date && <span className="news-feed-date"> — {event.date}</span>}
-                </span>
-              </a>
-            ))
+        <>
+          {events.length > 0 && (
+            <p className="news-feed-summary">
+              {newCount > 0
+                ? `${newCount} new ${newCount === 1 ? 'announcement' : 'announcements'} since your last visit`
+                : "You're all caught up — no new announcements since your last visit."}
+            </p>
           )}
-        </div>
+          <div className="news-feed-items">
+            {events.length === 0 ? (
+              <p className="news-feed-empty">No upcoming shows found near {location.label}.</p>
+            ) : (
+              sortedEvents
+                .slice(0, visibleCount)
+                .map((event) => <NewsCard key={event.id} event={event} isNew={newEventIds.has(event.id)} />)
+            )}
+          </div>
+          {visibleCount < sortedEvents.length && (
+            <button className="news-feed-more" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>
+              Show more ({sortedEvents.length - visibleCount} left)
+            </button>
+          )}
+        </>
       )}
     </section>
   )
