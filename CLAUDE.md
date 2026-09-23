@@ -17,7 +17,8 @@ not in a separate `tests/` folder — keeps a test in view whenever you
 touch its source. Vitest environment is plain `node` (no jsdom/DOM
 testing set up yet); it's for pure logic (`lib/*.ts`), not components.
 CI runs `npm run lint`, `npm test`, and `npm run build` on every PR and
-push to `main`.
+push to `main`, plus a gitleaks scan of the full git history for
+committed secrets.
 
 Plain `npm run dev` does not serve `/api` routes. To exercise the Spotify
 function locally, use `npx vercel dev` instead (requires `npx vercel
