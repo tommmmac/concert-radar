@@ -7,6 +7,7 @@ function Footer() {
       <span>Concert Radar — Built for finding the next show</span>
       <nav className="footer-links">
         <Link to="/about">About</Link>
+        <Link to="/privacy">Privacy</Link>
         <a href="https://github.com/tommmmac/concert-radar" target="_blank" rel="noreferrer">
           GitHub
         </a>
