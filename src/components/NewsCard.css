@@ -92,6 +92,10 @@
   color: var(--color-text-muted);
 }
 
+.news-card-bio--fallback {
+  font-style: italic;
+}
+
 .news-card-bio--skeleton {
   height: 42px;
   border-radius: 6px;
