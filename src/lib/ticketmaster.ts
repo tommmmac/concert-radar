@@ -6,12 +6,6 @@ export interface ConcertEvent {
   venueName: string
   lat: number
   lng: number
-  /**
-   * Which search found it, when a suburb search also covers its parent city
-   * (see `GeocodedLocation.city`): 'local' = near the suburb, 'city' = near
-   * the city centre. Unset for a normal single-area search.
-   */
-  area?: 'local' | 'city'
 }
 
 interface DiscoveryResponse {

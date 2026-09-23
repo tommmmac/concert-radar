@@ -1,12 +1,24 @@
 import { fetchNearbyConcerts, type ConcertEvent } from './ticketmaster'
 import { fetchMockConcerts } from './mockEvents'
-import { mergeAreaEvents } from './areas'
+import { mergeAreaEvents, widenUntilEnough } from './areas'
 import type { GeocodedLocation } from './geocode'
 
 const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true'
 
-export async function getNearbyConcerts(location: GeocodedLocation): Promise<ConcertEvent[]> {
-  if (USE_MOCK_DATA) return fetchMockConcerts()
+// A place with no parent city and fewer than this many shows nearby gets a
+// wider search, so small towns and "cities" like Evanston still reach the
+// venues of the big city next door.
+const MIN_EVENTS = 20
+const RADII_KM = [25, 50, 100]
+
+export interface NearbyConcerts {
+  events: ConcertEvent[]
+  /** Set when the search had to go beyond the default radius to find enough shows. */
+  widenedToKm: number | null
+}
+
+export async function getNearbyConcerts(location: GeocodedLocation): Promise<NearbyConcerts> {
+  if (USE_MOCK_DATA) return { events: await fetchMockConcerts(), widenedToKm: null }
 
   // Outer suburb of a bigger city: search both, so someone in Cranbourne
   // sees Melbourne's venues as well as what's on locally.
@@ -15,8 +27,13 @@ export async function getNearbyConcerts(location: GeocodedLocation): Promise<Con
       fetchNearbyConcerts(location.lat, location.lng),
       fetchNearbyConcerts(location.city.lat, location.city.lng),
     ])
-    return mergeAreaEvents(local, city)
+    return { events: mergeAreaEvents(local, city), widenedToKm: null }
   }
 
-  return fetchNearbyConcerts(location.lat, location.lng)
+  const { events, radiusKm } = await widenUntilEnough(
+    (radius) => fetchNearbyConcerts(location.lat, location.lng, radius),
+    RADII_KM,
+    MIN_EVENTS,
+  )
+  return { events, widenedToKm: radiusKm > RADII_KM[0] ? radiusKm : null }
 }

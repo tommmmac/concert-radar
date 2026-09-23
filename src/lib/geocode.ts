@@ -4,9 +4,9 @@ export interface GeocodedLocation {
   label: string
   /**
    * The bigger city an outer suburb belongs to (Cranbourne → Melbourne).
-   * When set, events are fetched around both points and the News feed splits
-   * into "In {city}" and "Near {label}" sections. Unset for cities
-   * themselves and for inner suburbs close enough that one search covers both.
+   * When set, events are fetched around both points and merged into one
+   * list. Unset for cities themselves and for inner suburbs close enough
+   * that one search covers both.
    */
   city?: { lat: number; lng: number; label: string }
 }
@@ -90,6 +90,8 @@ async function searchNominatim(query: string, near?: { lat: number; lng: number 
     // Towns, cities and suburbs only — otherwise "Cranbourne" matches
     // Cranbourne railway station and the label becomes "Cranbourne, Station Street".
     featureType: 'settlement',
+    // Otherwise names come back in the local language ("新宿区" for Shinjuku).
+    'accept-language': 'en',
   })
   if (near) params.set('viewbox', viewboxAround(near))
 
