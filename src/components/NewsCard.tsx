@@ -2,6 +2,7 @@ import { useSpotifyArtist } from '../hooks/useSpotifyArtist'
 import { useArtistDetails } from '../hooks/useArtistDetails'
 import { genreColor } from '../lib/genreColor'
 import { formatEventDate } from '../lib/formatDate'
+import { cleanArtistName } from '../lib/artistName'
 import type { ConcertEvent } from '../lib/ticketmaster'
 import './NewsCard.css'
 
@@ -11,8 +12,10 @@ interface NewsCardProps {
 }
 
 function NewsCard({ event, isNew }: NewsCardProps) {
-  const { artist, loading: artistLoading } = useSpotifyArtist(event.name)
-  const { details, loading: detailsLoading } = useArtistDetails(event.name)
+  // Display the full Ticketmaster title, but look the artist up by the cleaned name.
+  const artistName = cleanArtistName(event.name)
+  const { artist, loading: artistLoading } = useSpotifyArtist(artistName)
+  const { details, loading: detailsLoading } = useArtistDetails(artistName)
 
   return (
     <article className={isNew ? 'news-card news-card--new' : 'news-card'}>
@@ -50,8 +53,15 @@ function NewsCard({ event, isNew }: NewsCardProps) {
 
         {detailsLoading ? (
           <div className="news-card-bio news-card-bio--skeleton" />
+        ) : details?.bio ? (
+          <p className="news-card-bio">{details.bio}</p>
         ) : (
-          details?.bio && <p className="news-card-bio">{details.bio}</p>
+          // Small/local acts often aren't on Last.fm — say something useful
+          // from the listing itself rather than leaving a blank gap.
+          <p className="news-card-bio news-card-bio--fallback">
+            Catch {artistName} live at {event.venueName}. No artist bio yet — check the Ticketmaster listing for
+            lineup and set times.
+          </p>
         )}
 
         <div className="news-card-footer">

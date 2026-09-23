@@ -3,6 +3,7 @@ import { useSpotifyArtist } from '../hooks/useSpotifyArtist'
 import { useArtistDetails } from '../hooks/useArtistDetails'
 import { genreColor } from '../lib/genreColor'
 import { formatEventDate } from '../lib/formatDate'
+import { cleanArtistName } from '../lib/artistName'
 import type { ArtistGroup } from '../lib/artists'
 import './ArtistCard.css'
 
@@ -11,8 +12,9 @@ interface ArtistCardProps {
 }
 
 function ArtistCard({ artist }: ArtistCardProps) {
-  const { artist: spotifyArtist, loading: artistLoading } = useSpotifyArtist(artist.name)
-  const { details, loading: detailsLoading } = useArtistDetails(artist.name)
+  const lookupName = cleanArtistName(artist.name)
+  const { artist: spotifyArtist, loading: artistLoading } = useSpotifyArtist(lookupName)
+  const { details, loading: detailsLoading } = useArtistDetails(lookupName)
   const [detailsOpen, setDetailsOpen] = useState(false)
 
   return (

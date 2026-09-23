@@ -6,14 +6,20 @@ export interface LastFmArtistDetails {
 }
 
 const API_KEY = import.meta.env.VITE_LASTFM_API_KEY
+const HAS_API_KEY = Boolean(API_KEY) && API_KEY !== 'your_key_here'
 const BASE_URL = 'https://ws.audioscrobbler.com/2.0/'
-const CACHE_NS = 'lastfm-artist-v2' // bump when the cached shape/filtering changes, to invalidate stale entries
+// Bump when the cached shape/filtering changes, to invalidate stale entries.
+// v3: v2 could hold nulls cached from failed requests (e.g. a bad key).
+const CACHE_NS = 'lastfm-artist-v3'
 
 // In-memory cache for the current session (fastest); falls back to a
 // localStorage-backed cache so lookups survive a page reload too.
 const memoryCache = new Map<string, Promise<LastFmArtistDetails | null>>()
 
 export function fetchArtistDetails(artistName: string): Promise<LastFmArtistDetails | null> {
+  // No usable key: skip the request entirely rather than caching a 403.
+  if (!HAS_API_KEY) return Promise.resolve(null)
+
   const key = artistName.trim().toLowerCase()
 
   const inMemory = memoryCache.get(key)
@@ -26,6 +32,8 @@ export function fetchArtistDetails(artistName: string): Promise<LastFmArtistDeta
     return resolved
   }
 
+  // Only real answers (including "no such artist" → null) are persisted;
+  // a failed request throws past writeCache, so the next page load retries.
   const promise = lookupArtist(artistName)
     .then((result) => {
       writeCache(CACHE_NS, key, result)
@@ -37,8 +45,6 @@ export function fetchArtistDetails(artistName: string): Promise<LastFmArtistDeta
 }
 
 async function lookupArtist(artistName: string): Promise<LastFmArtistDetails | null> {
-  if (!API_KEY) return null
-
   const params = new URLSearchParams({
     method: 'artist.getinfo',
     artist: artistName,
@@ -47,7 +53,7 @@ async function lookupArtist(artistName: string): Promise<LastFmArtistDetails | n
   })
 
   const res = await fetch(`${BASE_URL}?${params}`)
-  if (!res.ok) return null
+  if (!res.ok) throw new Error(`Last.fm lookup failed: ${res.status}`)
 
   const data = (await res.json()) as {
     artist?: {

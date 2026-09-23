@@ -23,7 +23,7 @@ export interface AppContext {
 
 function Layout() {
   const routeLocation = useRouteLocation()
-  const isWide = routeLocation.pathname === '/map'
+  const isWide = routeLocation.pathname === '/map' || routeLocation.pathname === '/news'
   const [location, setLocation] = useState<GeocodedLocation>(MELBOURNE)
   const [events, setEvents] = useState<ConcertEvent[]>([])
   const [error, setError] = useState<string | null>(null)
