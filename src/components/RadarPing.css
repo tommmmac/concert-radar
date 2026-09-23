@@ -1,39 +1,66 @@
 /* Sits on the landing hero's dark gradient in both themes, so it uses fixed
-   neon colours rather than themed tokens. */
+   colours (the logo's) rather than themed tokens. */
 .radar {
-  --radar-line: rgba(255, 46, 166, 0.22);
   --radar-sweep-duration: 4s; /* keep in sync with SWEEP_SECONDS in RadarPing.tsx */
+  --radar-groove: rgba(34, 211, 238, 0.22);
 
   position: relative;
   width: 100%;
   aspect-ratio: 1;
   border-radius: 50%;
   overflow: hidden;
-  background: radial-gradient(circle, rgba(255, 46, 166, 0.08), transparent 70%);
+  /* Vinyl, lit from the top-left like the logo's disc. */
+  background: radial-gradient(circle at 35% 35%, #1a0a1f, #05050a 75%);
+  box-shadow:
+    inset 0 0 0 2px rgba(34, 211, 238, 0.3),
+    0 0 60px rgba(255, 46, 166, 0.25);
 }
 
-/* Range rings + crosshair, all from gradients on one element. */
-.radar-rings {
+/* Grooves: two bright rings at the logo's radii (53% and 77%) that double
+   as radar range rings, over fine grooves that stop short of the label.
+   Plus a static sheen — the light source doesn't move, so neither does
+   the reflection when a real record spins. */
+.radar-grooves {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  border: 1px solid var(--radar-line);
   background:
-    radial-gradient(circle, transparent 24.5%, var(--radar-line) 25%, transparent 25.5%),
-    radial-gradient(circle, transparent 49.5%, var(--radar-line) 50%, transparent 50.5%),
-    radial-gradient(circle, transparent 74%, var(--radar-line) 74.5%, transparent 75%),
-    linear-gradient(var(--radar-line), var(--radar-line)) center / 1px 100% no-repeat,
-    linear-gradient(var(--radar-line), var(--radar-line)) center / 100% 1px no-repeat;
+    radial-gradient(circle closest-side, transparent 52%, var(--radar-groove) 52.5%, var(--radar-groove) 53.5%, transparent 54%),
+    radial-gradient(circle closest-side, transparent 76%, var(--radar-groove) 76.5%, var(--radar-groove) 77.5%, transparent 78%),
+    repeating-radial-gradient(circle closest-side, transparent 0 2.4%, rgba(255, 255, 255, 0.035) 2.4% 2.8%);
+  -webkit-mask-image: radial-gradient(circle closest-side, transparent 30%, black 31%, black 97%, transparent 98%);
+  mask-image: radial-gradient(circle closest-side, transparent 30%, black 31%, black 97%, transparent 98%);
 }
 
-/* The beam: a conic gradient whose bright edge is at 12 o'clock, fading
-   anticlockwise behind it — rotating the element sweeps it round. */
+.radar-grooves::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 30deg,
+    transparent 0deg,
+    rgba(255, 255, 255, 0.06) 25deg,
+    transparent 55deg,
+    transparent 180deg,
+    rgba(255, 255, 255, 0.06) 205deg,
+    transparent 235deg
+  );
+}
+
+/* Everything on the record that visibly turns: the sweep and the label. */
+.radar-spin {
+  position: absolute;
+  inset: 0;
+  animation: radar-spin var(--radar-sweep-duration) linear infinite;
+}
+
+/* The beam, painted on the record like the logo's sweep line: bright edge
+   at 12 o'clock, a long faint trail fading anticlockwise behind it. */
 .radar-sweep {
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  /* Long, faint trail (~110°) that eases in, then a thin bright leading
-     edge — a short, strong trail reads as a solid pie slice instead. */
   background: conic-gradient(
     from 0deg,
     transparent 0deg 250deg,
@@ -43,19 +70,45 @@
     rgba(255, 108, 191, 0.85) 359.5deg,
     transparent 360deg
   );
-  animation: radar-spin var(--radar-sweep-duration) linear infinite;
 }
 
-.radar-centre {
+/* Record label, as in the logo: dark teal with a cyan edge and spindle
+   hole. The pink mark near its rim is what makes the spin visible. */
+.radar-label {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 8px;
-  height: 8px;
-  margin: -4px 0 0 -4px;
+  width: 26%;
+  aspect-ratio: 1;
   border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, #0d1f21 60%, #0a181a);
+  box-shadow: inset 0 0 0 2px rgba(34, 211, 238, 0.85);
+}
+
+.radar-label::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--color-live);
+  box-shadow: 0 0 10px var(--color-live);
+}
+
+.radar-label-mark {
+  position: absolute;
+  top: 14%;
+  left: 50%;
+  width: 12%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translateX(-50%);
   background: var(--color-accent);
-  box-shadow: 0 0 12px var(--color-accent);
+  box-shadow: 0 0 8px var(--color-accent);
 }
 
 /* A venue blip: dim until the beam passes, then flashes and sends out a ring.
@@ -124,13 +177,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .radar-sweep,
+  .radar-spin,
   .radar-blip,
   .radar-blip::after {
     animation: none;
   }
 
-  .radar-sweep {
+  .radar-spin {
     transform: rotate(40deg); /* frozen mid-sweep so it still reads as a radar */
   }
 

@@ -13,21 +13,30 @@ const BLIPS = [
   { angle: 232, distance: 70 },
   { angle: 251, distance: 84 },
   { angle: 276, distance: 56 },
-  { angle: 303, distance: 30 },
+  { angle: 303, distance: 38 },
   { angle: 312, distance: 62 },
   { angle: 341, distance: 50 },
 ]
 
 /**
- * Decorative radar for the landing hero: a rotating sweep over range rings,
- * with blips that ping as the beam passes them. Each blip's delay is derived
- * from its angle, so the ping lines up with the sweep.
+ * Decorative "record radar" for the landing hero, echoing the logo: a vinyl
+ * disc whose grooves double as range rings. The record spins, carrying a
+ * pink sweep painted on it, and blips ping as the sweep passes them. Each
+ * blip's delay is derived from its angle, so the ping lines up with the sweep.
  */
 function RadarPing() {
   return (
     <div className="radar" aria-hidden="true">
-      <div className="radar-rings" />
-      <div className="radar-sweep" />
+      {/* Grooves are perfect circles, so they don't need to rotate — only the
+          asymmetric parts (sweep + label mark) spin, and that reads as the
+          whole record turning. */}
+      <div className="radar-grooves" />
+      <div className="radar-spin">
+        <div className="radar-sweep" />
+        <div className="radar-label">
+          <span className="radar-label-mark" />
+        </div>
+      </div>
       {BLIPS.map(({ angle, distance }) => {
         const radians = (angle * Math.PI) / 180
         // Radar is a square; 50% is the centre and the radius is 50%.
@@ -40,7 +49,6 @@ function RadarPing() {
         } as CSSProperties
         return <span key={angle} className="radar-blip" style={style} />
       })}
-      <span className="radar-centre" />
     </div>
   )
 }
