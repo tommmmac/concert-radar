@@ -17,8 +17,9 @@ export interface AppContext {
   loading: boolean
   error: string | null
   newEventIds: Set<string>
+  /** Set when there were too few shows nearby and the search radius was widened. */
+  widenedToKm: number | null
   location: GeocodedLocation
-  setLocation: (location: GeocodedLocation) => void
 }
 
 function Layout() {
@@ -29,14 +30,16 @@ function Layout() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [newEventIds, setNewEventIds] = useState<Set<string>>(new Set())
+  const [widenedToKm, setWidenedToKm] = useState<number | null>(null)
 
   useEffect(() => {
     setLoading(true)
     setError(null)
-    getNearbyConcerts(location.lat, location.lng)
+    getNearbyConcerts(location)
       .then((fetched) => {
-        setEvents(fetched)
-        setNewEventIds(findNewEventIds(fetched.map((event) => event.id)))
+        setEvents(fetched.events)
+        setWidenedToKm(fetched.widenedToKm)
+        setNewEventIds(findNewEventIds(fetched.events.map((event) => event.id)))
       })
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false))
@@ -50,13 +53,13 @@ function Layout() {
     loading,
     error,
     newEventIds,
+    widenedToKm,
     location,
-    setLocation,
   }
 
   return (
     <div className="page">
-      <Header />
+      <Header location={location} onLocationChange={setLocation} />
       <main className={isWide ? 'page-content page-content--wide' : 'page-content'}>
         <Outlet context={context} />
       </main>

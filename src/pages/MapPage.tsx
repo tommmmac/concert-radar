@@ -9,22 +9,27 @@ import '../lib/leafletIconFix'
 import type { AppContext } from '../components/Layout'
 import type { VenueGroup } from '../lib/venues'
 import VenuePanel from '../components/VenuePanel'
-import LocationSearch from '../components/LocationSearch'
 import './MapPage.css'
 
 function MapPage() {
-  const { venues, location, setLocation } = useOutletContext<AppContext>()
+  const { venues, location } = useOutletContext<AppContext>()
   const [selectedVenue, setSelectedVenue] = useState<VenueGroup | null>(null)
 
   return (
     <div className="map-page">
-      <LocationSearch location={location} onLocationChange={setLocation} />
-
       <div className="map-card">
         <MapContainer
           key={`${location.lat},${location.lng}`}
-          center={[location.lat, location.lng]}
-          zoom={12}
+          // Outer suburb + its city: frame both. Otherwise centre on the place.
+          {...(location.city
+            ? {
+                bounds: [
+                  [location.lat, location.lng],
+                  [location.city.lat, location.city.lng],
+                ],
+                boundsOptions: { padding: [60, 60] },
+              }
+            : { center: [location.lat, location.lng], zoom: 12 })}
           style={{ height: '100%', width: '100%' }}
         >
           <TileLayer

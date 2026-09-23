@@ -20,7 +20,8 @@ function LocationSearch({ location, onLocationChange }: LocationSearchProps) {
     setSearching(true)
     setError(null)
     try {
-      const result = await geocodeCity(query.trim())
+      // Bias towards the area already being viewed, so "Cranbourne" means the one near here.
+      const result = await geocodeCity(query.trim(), location)
       if (!result) {
         setError('No matching location found')
       } else {
@@ -59,31 +60,41 @@ function LocationSearch({ location, onLocationChange }: LocationSearchProps) {
   }
 
   return (
-    <aside className="location-search">
-      <h2>Search a city</h2>
-      <p className="location-search-current">
-        Showing shows near <strong>{location.label}</strong>
-      </p>
-
-      <form onSubmit={handleSearch}>
+    // Lives in the header (not on a page) because the location is app-wide
+    // state in Layout — searching here updates News, Map and the landing page.
+    <form className="location-search" onSubmit={handleSearch} role="search">
+      <label className="location-search-current" htmlFor="location-search-input">
+        Near <strong>{location.label}</strong>
+      </label>
+      <div className="location-search-field">
         <input
-          type="text"
+          id="location-search-input"
+          type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="e.g. Sydney, Tokyo…"
+          placeholder="Search a suburb or city…"
           disabled={searching}
         />
-        <button type="submit" disabled={searching || !query.trim()}>
-          {searching ? 'Searching…' : 'Search'}
+        <button type="submit" className="location-search-submit" disabled={searching || !query.trim()}>
+          {searching ? '…' : 'Search'}
         </button>
-      </form>
-
-      <button className="location-search-geo" onClick={handleUseMyLocation} disabled={searching}>
-        📍 Use my location
-      </button>
-
-      {error && <p className="location-search-error">{error}</p>}
-    </aside>
+        <button
+          type="button"
+          className="location-search-geo"
+          onClick={handleUseMyLocation}
+          disabled={searching}
+          title="Use my location"
+          aria-label="Use my location"
+        >
+          📍
+        </button>
+      </div>
+      {error && (
+        <p className="location-search-error" role="alert">
+          {error}
+        </p>
+      )}
+    </form>
   )
 }
 
