@@ -10,7 +10,7 @@ function NotFound() {
       <h1>Nothing on the radar here</h1>
       <p>That page doesn't exist — it might've moved, or the link's just wrong.</p>
       <Link className="not-found-link" to="/">
-        Back to News
+        Back to home
       </Link>
     </div>
   )

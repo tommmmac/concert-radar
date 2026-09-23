@@ -1,5 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
+import LandingPage from './pages/LandingPage'
 import NewsPage from './pages/NewsPage'
 import MapPage from './pages/MapPage'
 import About from './pages/About'
@@ -9,7 +10,8 @@ function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route index element={<NewsPage />} />
+        <Route index element={<LandingPage />} />
+        <Route path="news" element={<NewsPage />} />
         <Route path="map" element={<MapPage />} />
         <Route path="about" element={<About />} />
         <Route path="*" element={<NotFound />} />

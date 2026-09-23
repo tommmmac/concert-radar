@@ -123,8 +123,9 @@ hashed from the genre string (`lib/genreColor.ts`), not a maintained
 palette, since there's no fixed list of possible genre tags.
 
 **Routing**: `App.tsx` defines routes nested under a shared `Layout`
-(header + footer chrome): `/` → `NewsPage`, `/map` → `MapPage`, `/about`
-→ a currently-blank stub linked from the footer.
+(header + footer chrome): `/` → `LandingPage`, `/news` → `NewsPage`,
+`/map` → `MapPage`, `/about` → a currently-blank stub linked from the
+footer.
 
 **Styling**: design tokens (colors, radii, shadows) live as CSS custom
 properties on `:root` in `src/index.css`; component-scoped CSS files
