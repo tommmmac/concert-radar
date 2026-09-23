@@ -14,6 +14,24 @@
       rel="stylesheet"
     />
     <title>Concert Radar</title>
+    <!-- Apply the theme before first paint (React loads too late — a dark-mode
+         visitor would see a white flash). Same rules as resolveTheme() in
+         src/lib/theme.ts; keep the storage key in sync. -->
+    <script>
+      ;(function () {
+        var stored = null
+        try {
+          stored = localStorage.getItem('concert-radar:theme')
+        } catch (e) {}
+        var theme =
+          stored === 'light' || stored === 'dark'
+            ? stored
+            : window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light'
+        document.documentElement.dataset.theme = theme
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

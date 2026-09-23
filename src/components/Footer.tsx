@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import ThemeToggle from './ThemeToggle'
 import './Footer.css'
 
 function Footer() {
@@ -11,6 +12,7 @@ function Footer() {
         <a href="https://github.com/tommmmac/concert-radar" target="_blank" rel="noreferrer">
           GitHub
         </a>
+        <ThemeToggle />
       </nav>
     </footer>
   )

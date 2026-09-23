@@ -14,8 +14,39 @@
   --shadow-md: 0 4px 16px rgba(5, 5, 10, 0.22);
   --shadow-lg: 0 12px 32px rgba(5, 5, 10, 0.32);
 
+  /* Themed tokens — light values here, dark overrides below. The header,
+     footer and gradient banners use the --color-bg-* tokens above and stay
+     dark in both themes. */
+  --color-page: #f4f4f8;
+  --color-accent-text: #d6208a; /* accent as text colour on surfaces */
+  --color-accent-soft: #fdeef6; /* pink tint behind artist cards, counts */
+  --color-accent-tint: #fff7fb; /* fainter tint for "new" news cards */
+  --color-accent-tint-border: #f9c2df;
+  --color-skeleton: #efeff4;
+  --color-skeleton-shine: #f7f7fa;
+
   font-family: 'Inter', system-ui, sans-serif;
   color-scheme: light;
+}
+
+/* Set on <html> by the inline script in index.html (before first paint) and
+   by ThemeToggle. Midnight palette: near-black surfaces, same neon accents. */
+:root[data-theme='dark'] {
+  --color-page: #0d0c14;
+  --color-surface: #17151f;
+  --color-text: #ece9f5;
+  --color-text-muted: #9a97aa;
+  --color-border: #2a2735;
+  --color-accent-text: #ff6cbf;
+  --color-accent-soft: rgba(255, 46, 166, 0.14);
+  --color-accent-tint: rgba(255, 46, 166, 0.07);
+  --color-accent-tint-border: rgba(255, 46, 166, 0.35);
+  --color-skeleton: #221f2c;
+  --color-skeleton-shine: #2d2a39;
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+
+  color-scheme: dark;
 }
 
 * {
@@ -28,6 +59,7 @@ html, body, #root {
 
 body {
   margin: 0;
+  background: var(--color-page); /* also covers overscroll/bounce areas */
   color: var(--color-text);
 }
 
@@ -42,6 +74,45 @@ h1, h2, h3, .brand {
   border-radius: 50%;
   background: var(--color-live);
   animation: pulse 1.4s ease-in-out infinite;
+}
+
+/* Genre pills: the hue is per-genre (--genre-hue, set inline from
+   lib/genreColor.ts), the lightness per theme — so a genre keeps its colour
+   identity in both themes. */
+.genre-pill {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: hsl(var(--genre-hue) 70% 92%);
+  color: hsl(var(--genre-hue) 55% 32%);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+:root[data-theme='dark'] .genre-pill {
+  background: hsl(var(--genre-hue) 45% 20%);
+  color: hsl(var(--genre-hue) 85% 80%);
+}
+
+/* Loading placeholder shimmer, shared by artist and news cards. */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-skeleton) 25%,
+    var(--color-skeleton-shine) 37%,
+    var(--color-skeleton) 63%
+  );
+  background-size: 400% 100%;
+  animation: skeleton-shimmer 1.4s ease infinite;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0 50%;
+  }
 }
 
 @keyframes pulse {

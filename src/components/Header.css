@@ -7,6 +7,9 @@
   background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-end));
   color: var(--color-text-inverse);
   box-shadow: var(--shadow-md);
+  /* Barely visible in light mode; in dark mode it's what separates the
+     header from the near-black page. */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .header-brand {

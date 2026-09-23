@@ -1,7 +1,8 @@
+import type { CSSProperties } from 'react'
 import { useState } from 'react'
 import { useSpotifyArtist } from '../hooks/useSpotifyArtist'
 import { useArtistDetails } from '../hooks/useArtistDetails'
-import { genreColor } from '../lib/genreColor'
+import { genreHue } from '../lib/genreColor'
 import { formatEventDate } from '../lib/formatDate'
 import { cleanArtistName } from '../lib/artistName'
 import type { ArtistGroup } from '../lib/artists'
@@ -20,7 +21,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
   return (
     <div className="artist-card">
       {artistLoading ? (
-        <div className="artist-card-image artist-card-image--skeleton" />
+        <div className="artist-card-image skeleton" />
       ) : (
         spotifyArtist?.imageUrl && (
           <img className="artist-card-image" src={spotifyArtist.imageUrl} alt="" />
@@ -37,18 +38,11 @@ function ArtistCard({ artist }: ArtistCardProps) {
 
         {details && details.tags.length > 0 && (
           <div className="artist-card-genres">
-            {details.tags.map((tag) => {
-              const color = genreColor(tag)
-              return (
-                <span
-                  key={tag}
-                  className="genre-pill"
-                  style={{ background: color.background, color: color.text }}
-                >
-                  {tag}
-                </span>
-              )
-            })}
+            {details.tags.map((tag) => (
+              <span key={tag} className="genre-pill" style={{ '--genre-hue': genreHue(tag) } as CSSProperties}>
+                {tag}
+              </span>
+            ))}
           </div>
         )}
 
