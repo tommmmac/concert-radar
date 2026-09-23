@@ -15,57 +15,19 @@ interface NewsFeedProps {
   events: ConcertEvent[]
   venueCount: number
   newEventIds: Set<string>
+  widenedToKm: number | null
   location: GeocodedLocation
 }
 
-interface NewsSectionProps {
-  title?: string
-  events: ConcertEvent[]
-  newEventIds: Set<string>
-}
-
-// One list of cards with its own "Show more", so a short local section
-// can't get buried behind 200 city events.
-function NewsSection({ title, events, newEventIds }: NewsSectionProps) {
+function NewsFeed({ loading, error, events, venueCount, newEventIds, widenedToKm, location }: NewsFeedProps) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
 
-  // New announcements first; sort is stable, so each group keeps the API's date order.
+  // New announcements first; sort is stable, so each group keeps date order.
   const sortedEvents = [...events].sort(
     (a, b) => Number(newEventIds.has(b.id)) - Number(newEventIds.has(a.id)),
   )
-
-  return (
-    <section className="news-section">
-      {title && (
-        <h2 className="news-section-title">
-          {title} <span className="news-section-count">{events.length}</span>
-        </h2>
-      )}
-      <div className="news-feed-items">
-        {sortedEvents.slice(0, visibleCount).map((event) => (
-          <NewsCard key={event.id} event={event} isNew={newEventIds.has(event.id)} />
-        ))}
-      </div>
-      {visibleCount < sortedEvents.length && (
-        <button className="news-feed-more" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>
-          Show more ({sortedEvents.length - visibleCount} left)
-        </button>
-      )}
-    </section>
-  )
-}
-
-function NewsFeed({ loading, error, events, venueCount, newEventIds, location }: NewsFeedProps) {
   const newCount = newEventIds.size
   const ready = !loading && !error
-
-  // City first — for an outer suburb, the city's venues are usually the draw.
-  const sections = location.city
-    ? [
-        { title: `In ${location.city.label}`, events: events.filter((event) => event.area === 'city') },
-        { title: `Near ${location.label}`, events: events.filter((event) => event.area !== 'city') },
-      ].filter((section) => section.events.length > 0)
-    : [{ title: undefined, events }]
 
   const stats = [
     { label: events.length === 1 ? 'show' : 'shows', value: events.length },
@@ -88,10 +50,16 @@ function NewsFeed({ loading, error, events, venueCount, newEventIds, location }:
             {loading && 'Finding shows…'}
             {!loading && error}
             {ready &&
+              events.length > 0 &&
               (newCount > 0
                 ? `${newCount} new ${newCount === 1 ? 'announcement' : 'announcements'} since your last visit — look for the New badge.`
                 : "You're all caught up — no new announcements since your last visit.")}
           </p>
+          {ready && widenedToKm && (
+            <p className="news-banner-summary">
+              Not many shows close by, so we've widened the search to {widenedToKm}km.
+            </p>
+          )}
           {location.city && (
             <p className="news-banner-summary">
               Including {location.city.label} city venues, about{' '}
@@ -124,14 +92,18 @@ function NewsFeed({ loading, error, events, venueCount, newEventIds, location }:
         (events.length === 0 ? (
           <p className="news-feed-empty">No upcoming shows found near {location.label}.</p>
         ) : (
-          sections.map((section) => (
-            <NewsSection
-              key={section.title ?? 'all'}
-              title={section.title}
-              events={section.events}
-              newEventIds={newEventIds}
-            />
-          ))
+          <>
+            <div className="news-feed-items">
+              {sortedEvents.slice(0, visibleCount).map((event) => (
+                <NewsCard key={event.id} event={event} isNew={newEventIds.has(event.id)} />
+              ))}
+            </div>
+            {visibleCount < sortedEvents.length && (
+              <button className="news-feed-more" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>
+                Show more ({sortedEvents.length - visibleCount} left)
+              </button>
+            )}
+          </>
         ))}
     </div>
   )

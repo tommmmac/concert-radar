@@ -1,7 +1,14 @@
 import { Link, NavLink } from 'react-router-dom'
+import LocationSearch from './LocationSearch'
+import type { GeocodedLocation } from '../lib/geocode'
 import './Header.css'
 
-function Header() {
+interface HeaderProps {
+  location: GeocodedLocation
+  onLocationChange: (location: GeocodedLocation) => void
+}
+
+function Header({ location, onLocationChange }: HeaderProps) {
   return (
     <header className="app-header">
       <Link to="/" className="header-brand">
@@ -20,6 +27,8 @@ function Header() {
           Map
         </NavLink>
       </nav>
+
+      <LocationSearch location={location} onLocationChange={onLocationChange} />
     </header>
   )
 }

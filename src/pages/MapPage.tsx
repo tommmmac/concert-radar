@@ -9,17 +9,14 @@ import '../lib/leafletIconFix'
 import type { AppContext } from '../components/Layout'
 import type { VenueGroup } from '../lib/venues'
 import VenuePanel from '../components/VenuePanel'
-import LocationSearch from '../components/LocationSearch'
 import './MapPage.css'
 
 function MapPage() {
-  const { venues, location, setLocation } = useOutletContext<AppContext>()
+  const { venues, location } = useOutletContext<AppContext>()
   const [selectedVenue, setSelectedVenue] = useState<VenueGroup | null>(null)
 
   return (
     <div className="map-page">
-      <LocationSearch location={location} onLocationChange={setLocation} />
-
       <div className="map-card">
         <MapContainer
           key={`${location.lat},${location.lng}`}
