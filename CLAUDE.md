@@ -50,9 +50,10 @@ per location change and passed down to routed pages through React
 Router's `<Outlet context={...}>` (typed as `AppContext`). Page
 components read it with `useOutletContext<AppContext>()` rather than
 fetching independently, so switching between News and Map doesn't
-re-fetch. `LocationSearch` (rendered on the Map page) calls
-`setLocation` from that context, which re-triggers the fetch effect in
-`Layout` and updates both pages at once.
+re-fetch. `LocationSearch` lives in the `Header` (every page), which
+`Layout` renders directly and hands `setLocation` as a prop — pages only
+read the location, they never set it. Changing it re-triggers the fetch
+effect in `Layout` and updates every page at once.
 
 **`lib/events.ts` is the fetch entry point**, not `lib/ticketmaster.ts`
 directly — it switches between the live Ticketmaster call and
@@ -86,9 +87,14 @@ Spotify + Last.fm lookup.
 `viewbox` bias around the current location (so it isn't the English
 village), labelled by the place's own name. If the place is an outer
 suburb of a bigger city (≥15km from its centre), `GeocodedLocation.city`
-is set and `lib/events.ts` fetches 25km around **both** points, tagging
-each event's `area` (`lib/areas.ts`). The News feed then splits into
-"In {city}" / "Near {suburb}" sections and the map frames both.
+is set and `lib/events.ts` fetches 25km around **both** points and merges
+them into one list (`lib/areas.ts`); the map frames both points.
+Places *without* a parent city (a city itself, or a country town) that
+find fewer than 20 shows widen the radius 25 → 50 → 100km instead
+(`widenUntilEnough`), and the News banner says so. This depends on how
+OpenStreetMap models each metro area, so it's inconsistent worldwide by
+design — a stopgap until the scheduled-ingestion/DB layer (see README)
+makes "which events to show" a query instead of per-visitor API calls.
 
 **Dates**: always display event dates through `formatEventDate`
 (`lib/formatDate.ts`, e.g. "Friday 25th September 2026") rather than
