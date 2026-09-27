@@ -90,9 +90,12 @@ rendered as a scrollable list of event cards in `VenuePanel`.
 
 **"New since last visit" detection** (`lib/concerts/seenEvents.ts`): the News
 feed diffs freshly fetched event IDs against a set persisted in
-`localStorage`. On a genuinely first-ever visit nothing is flagged new
-(to avoid flooding the feed with everything on load) — only IDs that
-appear after a seed set already exists get the "New" badge. The feed
+`localStorage`, **one set per area** (keyed by the search location rounded
+to 0.1°, ~10km). On a first visit to an area nothing is flagged new (to
+avoid flooding the feed with everything on load) — only IDs that appear
+after that area's seed set exists get the "New" badge. The per-area key
+matters: with a single shared set, the first search of any other city
+flagged every one of its events as new. The feed
 still lists every event, not just new ones: new IDs only drive the badge
 and sort order (new first). Cards are revealed 12 at a time
 (`PAGE_SIZE` in `NewsFeed.tsx`) because each one triggers its own

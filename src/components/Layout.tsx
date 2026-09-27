@@ -39,7 +39,7 @@ function Layout() {
       .then((fetched) => {
         setEvents(fetched.events)
         setWidenedToKm(fetched.widenedToKm)
-        setNewEventIds(findNewEventIds(fetched.events.map((event) => event.id)))
+        setNewEventIds(findNewEventIds(location, fetched.events.map((event) => event.id)))
       })
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false))
