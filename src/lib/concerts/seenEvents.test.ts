@@ -25,51 +25,57 @@ describe('findNewEventIds', () => {
   })
   afterEach(() => vi.unstubAllGlobals())
 
-  it('flags nothing on a first-ever visit, but remembers what was shown', () => {
-    expect(findNewEventIds(MELBOURNE, ['a', 'b', 'c'])).toEqual(new Set())
+  it('flags nothing on a first-ever visit, but says so and remembers what was shown', () => {
+    expect(findNewEventIds(MELBOURNE, ['a', 'b', 'c'])).toEqual({ newIds: new Set(), isFirstVisit: true })
     expect(storedIds().sort()).toEqual(['a', 'b', 'c'])
+  })
+
+  it('is not a first visit once the area has history, even with nothing new', () => {
+    findNewEventIds(MELBOURNE, ['a'])
+
+    expect(findNewEventIds(MELBOURNE, ['a'])).toEqual({ newIds: new Set(), isFirstVisit: false })
   })
 
   it('flags only events that were not there last visit', () => {
     findNewEventIds(MELBOURNE, ['a', 'b'])
 
-    expect(findNewEventIds(MELBOURNE, ['a', 'b', 'c', 'd'])).toEqual(new Set(['c', 'd']))
+    expect(findNewEventIds(MELBOURNE, ['a', 'b', 'c', 'd']).newIds).toEqual(new Set(['c', 'd']))
   })
 
   it('stops flagging an event once it has been seen', () => {
     findNewEventIds(MELBOURNE, ['a'])
     findNewEventIds(MELBOURNE, ['a', 'b'])
 
-    expect(findNewEventIds(MELBOURNE, ['a', 'b'])).toEqual(new Set())
+    expect(findNewEventIds(MELBOURNE, ['a', 'b']).newIds).toEqual(new Set())
   })
 
   it('does not re-flag an event that dropped out of the results and came back', () => {
     findNewEventIds(MELBOURNE, ['a', 'b'])
     findNewEventIds(MELBOURNE, ['a']) // b missing, e.g. briefly delisted
 
-    expect(findNewEventIds(MELBOURNE, ['a', 'b'])).toEqual(new Set())
+    expect(findNewEventIds(MELBOURNE, ['a', 'b']).newIds).toEqual(new Set())
     expect(storedIds().sort()).toEqual(['a', 'b'])
   })
 
   it('treats the first search of a different city as a first visit there', () => {
     findNewEventIds(MELBOURNE, ['mel-1', 'mel-2'])
 
-    expect(findNewEventIds(SYDNEY, ['syd-1', 'syd-2', 'syd-3'])).toEqual(new Set())
+    expect(findNewEventIds(SYDNEY, ['syd-1', 'syd-2', 'syd-3'])).toEqual({ newIds: new Set(), isFirstVisit: true })
   })
 
   it('keeps each area’s history when switching back and forth', () => {
     findNewEventIds(MELBOURNE, ['mel-1'])
     findNewEventIds(SYDNEY, ['syd-1'])
 
-    expect(findNewEventIds(MELBOURNE, ['mel-1', 'mel-2'])).toEqual(new Set(['mel-2']))
-    expect(findNewEventIds(SYDNEY, ['syd-1', 'syd-2'])).toEqual(new Set(['syd-2']))
+    expect(findNewEventIds(MELBOURNE, ['mel-1', 'mel-2']).newIds).toEqual(new Set(['mel-2']))
+    expect(findNewEventIds(SYDNEY, ['syd-1', 'syd-2']).newIds).toEqual(new Set(['syd-2']))
   })
 
   it('shares history between nearby positions, so "use my location" jitter still matches', () => {
     findNewEventIds(MELBOURNE, ['a'])
 
     const aFewHundredMetresAway = { lat: -37.8102, lng: 144.9667 }
-    expect(findNewEventIds(aFewHundredMetresAway, ['a', 'b'])).toEqual(new Set(['b']))
+    expect(findNewEventIds(aFewHundredMetresAway, ['a', 'b']).newIds).toEqual(new Set(['b']))
   })
 
   it('stores only a rounded (~10km) position, never the precise one', () => {
@@ -81,14 +87,14 @@ describe('findNewEventIds', () => {
   it('treats corrupt stored data as a first visit rather than crashing', () => {
     storage.setItem(MELBOURNE_KEY, '{not json')
 
-    expect(findNewEventIds(MELBOURNE, ['a', 'b'])).toEqual(new Set())
+    expect(findNewEventIds(MELBOURNE, ['a', 'b']).newIds).toEqual(new Set())
     expect(storedIds().sort()).toEqual(['a', 'b'])
   })
 
   it('flags nothing, without throwing, when storage is unavailable', () => {
     vi.stubGlobal('localStorage', undefined)
 
-    expect(findNewEventIds(MELBOURNE, ['a'])).toEqual(new Set())
-    expect(findNewEventIds(MELBOURNE, ['a', 'b'])).toEqual(new Set())
+    expect(findNewEventIds(MELBOURNE, ['a']).newIds).toEqual(new Set())
+    expect(findNewEventIds(MELBOURNE, ['a', 'b']).newIds).toEqual(new Set())
   })
 })

@@ -17,6 +17,8 @@ export interface AppContext {
   loading: boolean
   error: string | null
   newEventIds: Set<string>
+  /** First visit to this area, so nothing could be flagged new yet. */
+  isFirstVisit: boolean
   /** Set when there were too few shows nearby and the search radius was widened. */
   widenedToKm: number | null
   location: GeocodedLocation
@@ -30,6 +32,7 @@ function Layout() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [newEventIds, setNewEventIds] = useState<Set<string>>(new Set())
+  const [isFirstVisit, setIsFirstVisit] = useState(false)
   const [widenedToKm, setWidenedToKm] = useState<number | null>(null)
 
   useEffect(() => {
@@ -39,7 +42,9 @@ function Layout() {
       .then((fetched) => {
         setEvents(fetched.events)
         setWidenedToKm(fetched.widenedToKm)
-        setNewEventIds(findNewEventIds(location, fetched.events.map((event) => event.id)))
+        const seen = findNewEventIds(location, fetched.events.map((event) => event.id))
+        setNewEventIds(seen.newIds)
+        setIsFirstVisit(seen.isFirstVisit)
       })
       .catch((err: Error) => setError(err.message))
       .finally(() => setLoading(false))
@@ -53,6 +58,7 @@ function Layout() {
     loading,
     error,
     newEventIds,
+    isFirstVisit,
     widenedToKm,
     location,
   }

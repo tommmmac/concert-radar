@@ -32,9 +32,13 @@ function writeSeenIds(key: string, ids: Set<string>) {
  * Compares incoming event IDs against ones seen on a previous visit to this
  * area. Returns which are new, then persists the full set for next time.
  * On a first visit to an area (nothing stored yet) nothing is flagged as
- * new, since every event would otherwise show up as "new".
+ * new, since every event would otherwise show up as "new" — `isFirstVisit`
+ * lets the UI say so, rather than claiming nothing is new "since last visit".
  */
-export function findNewEventIds(area: { lat: number; lng: number }, currentIds: string[]): Set<string> {
+export function findNewEventIds(
+  area: { lat: number; lng: number },
+  currentIds: string[],
+): { newIds: Set<string>; isFirstVisit: boolean } {
   const key = storageKey(area)
   const seen = readSeenIds(key)
   const isFirstVisit = seen.size === 0
@@ -42,5 +46,5 @@ export function findNewEventIds(area: { lat: number; lng: number }, currentIds: 
 
   writeSeenIds(key, new Set([...seen, ...currentIds]))
 
-  return newIds
+  return { newIds, isFirstVisit }
 }
