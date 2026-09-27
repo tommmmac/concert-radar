@@ -77,7 +77,7 @@ h1, h2, h3, .brand {
 }
 
 /* Genre pills: the hue is per-genre (--genre-hue, set inline from
-   lib/genreColor.ts), the lightness per theme — so a genre keeps its colour
+   lib/artistInfo/genreColor.ts), the lightness per theme — so a genre keeps its colour
    identity in both themes. */
 .genre-pill {
   padding: 2px 10px;

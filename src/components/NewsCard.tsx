@@ -1,11 +1,11 @@
 import type { CSSProperties } from 'react'
 import { useLookup } from '../hooks/useLookup'
-import { fetchArtistInfo } from '../lib/spotify'
-import { fetchArtistDetails } from '../lib/lastfm'
-import { genreHue } from '../lib/genreColor'
+import { fetchArtistInfo } from '../lib/artistInfo/spotify'
+import { fetchArtistDetails } from '../lib/artistInfo/lastfm'
+import { genreHue } from '../lib/artistInfo/genreColor'
 import { formatEventDate } from '../lib/formatDate'
-import { cleanArtistName } from '../lib/artistName'
-import type { ConcertEvent } from '../lib/ticketmaster'
+import { cleanArtistName } from '../lib/artistInfo/artistName'
+import type { ConcertEvent } from '../lib/concerts/ticketmaster'
 import './NewsCard.css'
 
 interface NewsCardProps {

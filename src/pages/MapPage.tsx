@@ -7,7 +7,7 @@ import 'leaflet.markercluster/dist/MarkerCluster.css'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import { venueIcon } from '../lib/venueIcon'
 import type { AppContext } from '../components/Layout'
-import type { VenueGroup } from '../lib/venues'
+import type { VenueGroup } from '../lib/concerts/venues'
 import VenuePanel from '../components/VenuePanel'
 import './MapPage.css'
 
