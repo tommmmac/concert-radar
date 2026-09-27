@@ -21,7 +21,9 @@ API clients are tested against a stubbed `fetch` (`vi.stubGlobal('fetch',
 ...)` returning a real `Response`), never the live APIs. Modules that
 read an API key or hold a cache at load time are imported fresh per
 test: `vi.stubEnv(...)`, `vi.resetModules()`, then `await import(...)`
-(see `lib/concerts/ticketmaster.test.ts`). Tests for `api/` functions must start
+(see `lib/concerts/ticketmaster.test.ts`). Vitest loads `.env`, so a test
+touching `lib/concerts/events.ts` must pin `VITE_USE_MOCK_DATA` itself or
+it silently takes the mock path. Tests for `api/` functions must start
 with `_` (`api/_spotify-artist.test.ts`) — Vercel deploys every other
 file in `api/` as a route. Vitest doesn't type-check, so run
 `npm run build` too.
