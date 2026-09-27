@@ -1,0 +1,28 @@
+name: Daily API check
+
+# Calls each real API once and checks the fields the app relies on, so an
+# upstream change (a renamed field, a newly restricted endpoint) shows up as
+# a failed run — and an email — instead of a quietly broken site.
+on:
+  schedule:
+    - cron: '0 20 * * *' # 20:00 UTC = 6am AEST / 7am AEDT
+  workflow_dispatch: # "Run workflow" button, for checking on demand
+
+permissions:
+  contents: read
+
+jobs:
+  live-apis:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run test:live
+        env:
+          VITE_TICKETMASTER_API_KEY: ${{ secrets.TICKETMASTER_API_KEY }}
+          VITE_LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
