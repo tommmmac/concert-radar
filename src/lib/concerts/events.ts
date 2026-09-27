@@ -1,7 +1,7 @@
 import { fetchNearbyConcerts, type ConcertEvent } from './ticketmaster'
 import { fetchMockConcerts } from './mockEvents'
 import { mergeAreaEvents, widenUntilEnough } from './areas'
-import type { GeocodedLocation } from './geocode'
+import type { GeocodedLocation } from '../geocode'
 
 const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true'
 

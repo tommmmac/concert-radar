@@ -29,7 +29,7 @@ const API_KEY = import.meta.env.VITE_TICKETMASTER_API_KEY
 const BASE_URL = 'https://app.ticketmaster.com/discovery/v2/events.json'
 
 // Outer suburbs reach their city's venues via a second search around the
-// city centre (lib/events.ts), so each search can stay local.
+// city centre (lib/concerts/events.ts), so each search can stay local.
 const DEFAULT_RADIUS_KM = 25
 
 export async function fetchNearbyConcerts(

@@ -15,7 +15,16 @@ npm run preview   # preview a production build locally
 Tests are colocated with the code they cover (`foo.ts` → `foo.test.ts`),
 not in a separate `tests/` folder — keeps a test in view whenever you
 touch its source. Vitest environment is plain `node` (no jsdom/DOM
-testing set up yet); it's for pure logic (`lib/*.ts`), not components.
+testing set up yet); it's for pure logic (`lib/**/*.ts`), not components.
+
+API clients are tested against a stubbed `fetch` (`vi.stubGlobal('fetch',
+...)` returning a real `Response`), never the live APIs. Modules that
+read an API key or hold a cache at load time are imported fresh per
+test: `vi.stubEnv(...)`, `vi.resetModules()`, then `await import(...)`
+(see `lib/concerts/ticketmaster.test.ts`). Tests for `api/` functions must start
+with `_` (`api/_spotify-artist.test.ts`) — Vercel deploys every other
+file in `api/` as a route. Vitest doesn't type-check, so run
+`npm run build` too.
 CI runs `npm run lint`, `npm test`, and `npm run build` on every PR and
 push to `main`, plus a gitleaks scan of the full git history for
 committed secrets.
@@ -31,7 +40,7 @@ together. Both read env vars from the same `.env` file (Vite and
 
 - `VITE_TICKETMASTER_API_KEY` — required for live data (free at developer.ticketmaster.com)
 - `VITE_USE_MOCK_DATA` — set `true` to develop against fixture data in
-  `src/lib/mockEvents.ts` instead of hitting the live API (useful for UI
+  `src/lib/concerts/mockEvents.ts` instead of hitting the live API (useful for UI
   work without burning Ticketmaster's rate limit). Vite only reads env
   vars at startup — restart `npm run dev` after changing this.
 - `SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET` — server-only, no `VITE_`
@@ -42,6 +51,13 @@ together. Both read env vars from the same `.env` file (Vite and
   last.fm/api/account/create.
 
 ## Architecture
+
+**`src/lib` is grouped by topic**, tests colocated in each folder:
+`lib/concerts/` (Ticketmaster fetching, mock data, and grouping events
+by venue/artist/area), `lib/artistInfo/` (Spotify + Last.fm lookups and
+their cache), and cross-cutting helpers at the top level (`geocode`,
+`formatDate`, `theme`, `venueIcon`). Put new modules in the folder whose
+topic they serve, rather than back at the top level.
 
 **Shared data flow via router outlet context.** `Layout.tsx` is the sole
 owner of app state — current search `location`, fetched `events`,
@@ -55,24 +71,24 @@ re-fetch. `LocationSearch` lives in the `Header` (every page), which
 read the location, they never set it. Changing it re-triggers the fetch
 effect in `Layout` and updates every page at once.
 
-**`lib/events.ts` is the fetch entry point**, not `lib/ticketmaster.ts`
+**`lib/concerts/events.ts` is the fetch entry point**, not `lib/concerts/ticketmaster.ts`
 directly — it switches between the live Ticketmaster call and
 `mockEvents.ts` fixtures based on `VITE_USE_MOCK_DATA`. Always go
 through it so mock mode keeps working.
 
-**Data fetching is entirely client-side** — `lib/ticketmaster.ts` calls
+**Data fetching is entirely client-side** — `lib/concerts/ticketmaster.ts` calls
 the Ticketmaster Discovery API directly from the browser with the API
 key in a Vite env var (no backend proxy yet). A scheduled-ingestion /
 database layer is on the roadmap (see README) for when this needs to
 scale beyond a single-key, single-request-per-load model.
 
-**Venue grouping** (`lib/venues.ts`): multiple events at the same venue
+**Venue grouping** (`lib/concerts/venues.ts`): multiple events at the same venue
 are merged into one `VenueGroup` (keyed by coordinates rounded to 4
 decimal places) so the map shows one marker per venue rather than
 stacked pins. Clicking a marker (`MapPage.tsx`) sets the selected venue,
 rendered as a scrollable list of event cards in `VenuePanel`.
 
-**"New since last visit" detection** (`lib/seenEvents.ts`): the News
+**"New since last visit" detection** (`lib/concerts/seenEvents.ts`): the News
 feed diffs freshly fetched event IDs against a set persisted in
 `localStorage`. On a genuinely first-ever visit nothing is flagged new
 (to avoid flooding the feed with everything on load) — only IDs that
@@ -87,8 +103,8 @@ Spotify + Last.fm lookup.
 `viewbox` bias around the current location (so it isn't the English
 village), labelled by the place's own name. If the place is an outer
 suburb of a bigger city (≥15km from its centre), `GeocodedLocation.city`
-is set and `lib/events.ts` fetches 25km around **both** points and merges
-them into one list (`lib/areas.ts`); the map frames both points.
+is set and `lib/concerts/events.ts` fetches 25km around **both** points and merges
+them into one list (`lib/concerts/areas.ts`); the map frames both points.
 Places *without* a parent city (a city itself, or a country town) that
 find fewer than 20 shows widen the radius 25 → 50 → 100km instead
 (`widenUntilEnough`), and the News banner says so. This depends on how
@@ -122,10 +138,10 @@ holds `SPOTIFY_CLIENT_ID`/`_SECRET`, exchanges them for an access token
 (cached in a module-level variable across warm invocations), looks up
 an artist by name, and returns only `{ name, imageUrl, spotifyUrl }` to
 the frontend — the raw Spotify token never leaves the server.
-`src/lib/spotify.ts` calls this endpoint.
+`src/lib/artistInfo/spotify.ts` calls this endpoint.
 
 **Artist lookups (Spotify and Last.fm) share one pipeline.** Each lib
-wraps its fetch in `cachedLookup()` (`lib/persistentCache.ts`): a
+wraps its fetch in `cachedLookup()` (`lib/artistInfo/persistentCache.ts`): a
 two-tier cache (in-memory, then `localStorage` with a 24h TTL) that
 persists "not found" answers but not failures, so a reload retries.
 Cards call the generic `useLookup(name, fetchArtistInfo)` hook
@@ -143,7 +159,7 @@ endpoint is restricted to apps manually approved for Extended Quota
 Mode. Don't re-add a preview feature without that approval — it will
 fail 100% of the time, not just for tracks lacking a clip.
 
-**`lib/lastfm.ts` is a separate, client-side-safe integration** — unlike
+**`lib/artistInfo/lastfm.ts` is a separate, client-side-safe integration** — unlike
 Spotify, Last.fm's `artist.getinfo` endpoint only needs a public API key
 (no secret), so it's called directly from the browser and does not go
 through `/api`. It supplies both the genre pills and the bio (click to
@@ -152,7 +168,7 @@ request (`fetchArtistDetails`). Note: Spotify's artist `genres` field was tried 
 — it now returns empty consistently (even for major artists), a known
 recent Spotify API regression — so Last.fm's community tags are the
 actual genre source, not Spotify. Genre pill colors are deterministic,
-hashed from the genre string (`lib/genreColor.ts`), not a maintained
+hashed from the genre string (`lib/artistInfo/genreColor.ts`), not a maintained
 palette, since there's no fixed list of possible genre tags.
 
 **Routing**: `App.tsx` defines routes nested under a shared `Layout`
@@ -173,7 +189,7 @@ inline script in `index.html` picks the theme before first paint (saved
 choice in `localStorage`, else the device's `prefers-color-scheme`) —
 same rules as `resolveTheme()` in `lib/theme.ts`, so keep the two in
 sync. `ThemeToggle` (footer) flips and saves it. Genre pills get only a
-hue from `lib/genreColor.ts` (`--genre-hue`); `.genre-pill` sets
+hue from `lib/artistInfo/genreColor.ts` (`--genre-hue`); `.genre-pill` sets
 lightness per theme.
 
 ## Workflow

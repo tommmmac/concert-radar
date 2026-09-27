@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { ConcertEvent } from '../lib/ticketmaster'
+import type { ConcertEvent } from '../lib/concerts/ticketmaster'
 import { distanceKm, type GeocodedLocation } from '../lib/geocode'
 import NewsCard from './NewsCard'
 import './NewsFeed.css'

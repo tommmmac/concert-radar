@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
-import type { VenueGroup } from '../lib/venues'
-import { groupByArtist } from '../lib/artists'
+import type { VenueGroup } from '../lib/concerts/venues'
+import { groupByArtist } from '../lib/concerts/artists'
 import ArtistCard from './ArtistCard'
 import './VenuePanel.css'
 
