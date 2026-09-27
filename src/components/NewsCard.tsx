@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
-import { useSpotifyArtist } from '../hooks/useSpotifyArtist'
-import { useArtistDetails } from '../hooks/useArtistDetails'
+import { useLookup } from '../hooks/useLookup'
+import { fetchArtistInfo } from '../lib/spotify'
+import { fetchArtistDetails } from '../lib/lastfm'
 import { genreHue } from '../lib/genreColor'
 import { formatEventDate } from '../lib/formatDate'
 import { cleanArtistName } from '../lib/artistName'
@@ -15,8 +16,8 @@ interface NewsCardProps {
 function NewsCard({ event, isNew }: NewsCardProps) {
   // Display the full Ticketmaster title, but look the artist up by the cleaned name.
   const artistName = cleanArtistName(event.name)
-  const { artist, loading: artistLoading } = useSpotifyArtist(artistName)
-  const { details, loading: detailsLoading } = useArtistDetails(artistName)
+  const { data: artist, loading: artistLoading } = useLookup(artistName, fetchArtistInfo)
+  const { data: details, loading: detailsLoading } = useLookup(artistName, fetchArtistDetails)
 
   return (
     <article className={isNew ? 'news-card news-card--new' : 'news-card'}>
