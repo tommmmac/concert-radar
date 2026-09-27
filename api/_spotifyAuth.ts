@@ -1,5 +1,5 @@
-// Shared by the api/spotify-*.ts functions. The leading underscore tells
-// Vercel this file is not itself a route.
+// Spotify token handling for api/spotify-artist.ts. The leading underscore
+// tells Vercel this file is not itself a route.
 
 // Server-only credentials — never prefixed with VITE_, so Vite never
 // inlines them into the client bundle.

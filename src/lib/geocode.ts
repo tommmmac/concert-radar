@@ -20,7 +20,7 @@ const NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search'
 const BIAS_DEGREES = 2
 
 // Suburbs nearer than this to their city centre (e.g. Fitzroy, ~2km) get a
-// single search — a separate "In Melbourne" section would just repeat it.
+// single search — a second search around the city would just repeat it.
 const CITY_MIN_DISTANCE_KM = 15
 
 export interface NominatimResult {

@@ -1,12 +1,12 @@
 // Thin localStorage-backed cache with a TTL, so artist lookups survive a
-// page reload instead of re-fetching every visit. Falls back to just an
-// in-memory Map entry if storage is unavailable (private browsing, etc).
+// page reload instead of re-fetching every visit. If storage is unavailable
+// (private browsing, etc.), callers' own in-memory caches still work.
 interface CacheEntry<T> {
   value: T
   expiresAt: number
 }
 
-const DEFAULT_TTL_MS = 24 * 60 * 60 * 1000 // 24h, matches the API's own edge cache
+const DEFAULT_TTL_MS = 24 * 60 * 60 * 1000 // 24h, matches api/spotify-artist.ts's edge cache
 
 export function readCache<T>(namespace: string, key: string): T | undefined {
   try {
