@@ -16,6 +16,15 @@ Tests are colocated with the code they cover (`foo.ts` → `foo.test.ts`),
 not in a separate `tests/` folder — keeps a test in view whenever you
 touch its source. Vitest environment is plain `node` (no jsdom/DOM
 testing set up yet); it's for pure logic (`lib/*.ts`), not components.
+
+API clients are tested against a stubbed `fetch` (`vi.stubGlobal('fetch',
+...)` returning a real `Response`), never the live APIs. Modules that
+read an API key or hold a cache at load time are imported fresh per
+test: `vi.stubEnv(...)`, `vi.resetModules()`, then `await import(...)`
+(see `lib/ticketmaster.test.ts`). Tests for `api/` functions must start
+with `_` (`api/_spotify-artist.test.ts`) — Vercel deploys every other
+file in `api/` as a route. Vitest doesn't type-check, so run
+`npm run build` too.
 CI runs `npm run lint`, `npm test`, and `npm run build` on every PR and
 push to `main`, plus a gitleaks scan of the full git history for
 committed secrets.
