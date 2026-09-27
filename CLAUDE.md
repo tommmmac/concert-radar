@@ -9,6 +9,7 @@ npm run dev      # start Vite dev server
 npm run build    # tsc -b type-check, then vite build
 npm run lint      # oxlint
 npm test          # vitest run (one-shot; use `npx vitest` for watch mode)
+npm run test:live # live checks against the real APIs (uses .env keys)
 npm run preview   # preview a production build locally
 ```
 
@@ -30,6 +31,17 @@ file in `api/` as a route. Vitest doesn't type-check, so run
 CI runs `npm run lint`, `npm test`, and `npm run build` on every PR and
 push to `main`, plus a gitleaks scan of the full git history for
 committed secrets.
+
+**Live API checks** (`*.live.test.ts`, colocated like other tests) call
+the real Ticketmaster, Last.fm and Nominatim APIs plus production's
+`/api/spotify-artist`, through the app's own client code, and assert
+only the fields the app relies on. They're excluded from `npm test`
+(`vite.config.ts`) and run via `vitest.live.config.ts` — daily at 6am
+Melbourne by `.github/workflows/api-health.yml` (also a manual "Run
+workflow" button), with keys from the `TICKETMASTER_API_KEY` /
+`LASTFM_API_KEY` repo secrets. A failed run emails whoever last edited
+the workflow's cron line. If an upstream API changes, extend the relevant
+live check alongside the fix.
 
 Plain `npm run dev` does not serve `/api` routes. To exercise the Spotify
 function locally, use `npx vercel dev` instead (requires `npx vercel
