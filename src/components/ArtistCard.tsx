@@ -1,7 +1,8 @@
 import type { CSSProperties } from 'react'
 import { useState } from 'react'
-import { useSpotifyArtist } from '../hooks/useSpotifyArtist'
-import { useArtistDetails } from '../hooks/useArtistDetails'
+import { useLookup } from '../hooks/useLookup'
+import { fetchArtistInfo } from '../lib/spotify'
+import { fetchArtistDetails } from '../lib/lastfm'
 import { genreHue } from '../lib/genreColor'
 import { formatEventDate } from '../lib/formatDate'
 import { cleanArtistName } from '../lib/artistName'
@@ -14,8 +15,8 @@ interface ArtistCardProps {
 
 function ArtistCard({ artist }: ArtistCardProps) {
   const lookupName = cleanArtistName(artist.name)
-  const { artist: spotifyArtist, loading: artistLoading } = useSpotifyArtist(lookupName)
-  const { details, loading: detailsLoading } = useArtistDetails(lookupName)
+  const { data: spotifyArtist, loading: artistLoading } = useLookup(lookupName, fetchArtistInfo)
+  const { data: details, loading: detailsLoading } = useLookup(lookupName, fetchArtistDetails)
   const [detailsOpen, setDetailsOpen] = useState(false)
 
   return (

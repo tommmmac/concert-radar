@@ -1,4 +1,4 @@
-import { readCache, writeCache } from './persistentCache'
+import { cachedLookup } from './persistentCache'
 
 export interface LastFmArtistDetails {
   bio: string | null
@@ -12,36 +12,12 @@ const BASE_URL = 'https://ws.audioscrobbler.com/2.0/'
 // v3: v2 could hold nulls cached from failed requests (e.g. a bad key).
 const CACHE_NS = 'lastfm-artist-v3'
 
-// In-memory cache for the current session (fastest); falls back to a
-// localStorage-backed cache so lookups survive a page reload too.
-const memoryCache = new Map<string, Promise<LastFmArtistDetails | null>>()
+const cachedLookupArtist = cachedLookup(CACHE_NS, lookupArtist)
 
 export function fetchArtistDetails(artistName: string): Promise<LastFmArtistDetails | null> {
   // No usable key: skip the request entirely rather than caching a 403.
   if (!HAS_API_KEY) return Promise.resolve(null)
-
-  const key = artistName.trim().toLowerCase()
-
-  const inMemory = memoryCache.get(key)
-  if (inMemory) return inMemory
-
-  const persisted = readCache<LastFmArtistDetails | null>(CACHE_NS, key)
-  if (persisted !== undefined) {
-    const resolved = Promise.resolve(persisted)
-    memoryCache.set(key, resolved)
-    return resolved
-  }
-
-  // Only real answers (including "no such artist" → null) are persisted;
-  // a failed request throws past writeCache, so the next page load retries.
-  const promise = lookupArtist(artistName)
-    .then((result) => {
-      writeCache(CACHE_NS, key, result)
-      return result
-    })
-    .catch(() => null)
-  memoryCache.set(key, promise)
-  return promise
+  return cachedLookupArtist(artistName)
 }
 
 async function lookupArtist(artistName: string): Promise<LastFmArtistDetails | null> {
