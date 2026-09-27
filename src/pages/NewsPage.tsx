@@ -3,7 +3,8 @@ import type { AppContext } from '../components/Layout'
 import NewsFeed from '../components/NewsFeed'
 
 function NewsPage() {
-  const { events, venues, loading, error, newEventIds, widenedToKm, location } = useOutletContext<AppContext>()
+  const { events, venues, loading, error, newEventIds, isFirstVisit, widenedToKm, location } =
+    useOutletContext<AppContext>()
 
   return (
     <NewsFeed
@@ -14,6 +15,7 @@ function NewsPage() {
       events={events}
       venueCount={venues.length}
       newEventIds={newEventIds}
+      isFirstVisit={isFirstVisit}
       widenedToKm={widenedToKm}
       location={location}
     />

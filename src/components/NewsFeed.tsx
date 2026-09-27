@@ -15,11 +15,21 @@ interface NewsFeedProps {
   events: ConcertEvent[]
   venueCount: number
   newEventIds: Set<string>
+  isFirstVisit: boolean
   widenedToKm: number | null
   location: GeocodedLocation
 }
 
-function NewsFeed({ loading, error, events, venueCount, newEventIds, widenedToKm, location }: NewsFeedProps) {
+function NewsFeed({
+  loading,
+  error,
+  events,
+  venueCount,
+  newEventIds,
+  isFirstVisit,
+  widenedToKm,
+  location,
+}: NewsFeedProps) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
 
   // New announcements first; sort is stable, so each group keeps date order.
@@ -28,6 +38,14 @@ function NewsFeed({ loading, error, events, venueCount, newEventIds, widenedToKm
   )
   const newCount = newEventIds.size
   const ready = !loading && !error
+
+  // A first visit to an area has no "last visit" to compare against, so say
+  // tracking starts now rather than claiming nothing is new.
+  const newsSummary = isFirstVisit
+    ? `First look at ${location.label} — we'll flag newly announced shows from your next visit.`
+    : newCount > 0
+      ? `${newCount} new ${newCount === 1 ? 'announcement' : 'announcements'} since your last visit — look for the New badge.`
+      : "You're all caught up — no new announcements since your last visit."
 
   const stats = [
     { label: events.length === 1 ? 'show' : 'shows', value: events.length },
@@ -49,11 +67,7 @@ function NewsFeed({ loading, error, events, venueCount, newEventIds, widenedToKm
           <p className="news-banner-summary">
             {loading && 'Finding shows…'}
             {!loading && error}
-            {ready &&
-              events.length > 0 &&
-              (newCount > 0
-                ? `${newCount} new ${newCount === 1 ? 'announcement' : 'announcements'} since your last visit — look for the New badge.`
-                : "You're all caught up — no new announcements since your last visit.")}
+            {ready && events.length > 0 && newsSummary}
           </p>
           {ready && widenedToKm && (
             <p className="news-banner-summary">
