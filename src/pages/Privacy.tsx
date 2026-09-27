@@ -22,7 +22,10 @@ function Privacy() {
       <h2>Stored in your browser</h2>
       <p>Concert Radar saves a few things in your browser's local storage so it works better next time:</p>
       <ul>
-        <li>The IDs of events you've already seen, so new ones can be flagged.</li>
+        <li>
+          The IDs of events you've already seen, so new ones can be flagged. These are kept separately for each area
+          you've searched, labelled with a rough location (rounded to about 10km).
+        </li>
         <li>Cached artist images, genres and bios (kept for 24 hours) to cut down on repeat lookups.</li>
         <li>Your light/dark theme choice, if you've used the switch in the footer.</li>
       </ul>
