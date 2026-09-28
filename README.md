@@ -89,14 +89,14 @@ domains before the first request fires.
 - [ ] Genre and date-range filters
 - [ ] Additional event sources (Bandsintown, Eventbrite, SeatGeek) for
       broader coverage / cheapest-ticket comparison
-- [ ] Rate-limit protection for Ticketmaster: every visitor's browser
-      currently calls Ticketmaster directly with one shared embedded key
-      (hard quota: ~5000 req/day, 5/sec) — the exposed piece if traffic
-      ever picked up. Nearer-term fix: proxy it through a cached
-      serverless function (same pattern as `api/spotify-artist.ts`),
-      using Vercel's edge cache so repeat requests for the same
-      location don't hit Ticketmaster again. Full version: scheduled
-      ingestion into a database instead of querying live at all.
+- [x] Scheduled ingestion: a daily job loads ~36 cities' events into
+      Postgres (Neon), served by `/api/events`, so searches there no
+      longer hit Ticketmaster per visitor
+- [ ] Move the live-search fallback (places outside the preloaded
+      cities) behind a serverless function too, so the Ticketmaster key
+      stops being embedded in the browser bundle
+- [ ] Store artist info (Spotify image, Last.fm genres/bio) during
+      ingestion, so cards arrive complete and genre filters see every event
 - [x] Deploy (Vercel) — live at concert-radar.com
 
 ## License

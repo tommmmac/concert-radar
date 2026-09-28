@@ -9,6 +9,14 @@ import { MOCK_EVENTS } from './mockEvents'
 const fetchNearbyConcerts = vi.hoisted(() => vi.fn<(lat: number, lng: number, radiusKm?: number) => Promise<ConcertEvent[]>>())
 vi.mock('./ticketmaster', () => ({ fetchNearbyConcerts }))
 
+// Whether a search is answered from the database depends on the real city
+// list, so it's mocked too: off by default (the live-search tests below),
+// switched on per test in "preloaded cities".
+const isCovered = vi.hoisted(() => vi.fn<(lat: number, lng: number, radiusKm: number) => boolean>(() => false))
+vi.mock('./coverage', () => ({ isCovered }))
+const fetchStoredConcerts = vi.hoisted(() => vi.fn<(lat: number, lng: number, radiusKm: number) => Promise<ConcertEvent[]>>())
+vi.mock('./storedEvents', () => ({ fetchStoredConcerts }))
+
 // USE_MOCK_DATA is read when the module loads — and .env may set it — so
 // every test pins it explicitly and imports a fresh copy.
 async function loadEvents({ mockData = false } = {}) {
@@ -41,8 +49,11 @@ const CRANBOURNE: GeocodedLocation = {
 
 afterEach(() => {
   fetchNearbyConcerts.mockReset()
+  fetchStoredConcerts.mockReset()
+  isCovered.mockReset().mockReturnValue(false)
   vi.unstubAllEnvs()
   vi.useRealTimers()
+  vi.restoreAllMocks()
 })
 
 describe('getNearbyConcerts', () => {
@@ -67,8 +78,8 @@ describe('getNearbyConcerts', () => {
       await getNearbyConcerts(CRANBOURNE)
 
       expect(fetchNearbyConcerts.mock.calls).toEqual([
-        [-38.0996, 145.2834],
-        [-37.8142, 144.9632],
+        [-38.0996, 145.2834, 25],
+        [-37.8142, 144.9632, 25],
       ])
     })
 
@@ -135,6 +146,59 @@ describe('getNearbyConcerts', () => {
       const result = await getNearbyConcerts(EVANSTON)
 
       expect(result).toEqual({ events: shows(5, 'a'), widenedToKm: null })
+    })
+  })
+
+  describe('preloaded cities', () => {
+    it('answers a covered search from the database, not Ticketmaster', async () => {
+      isCovered.mockReturnValue(true)
+      fetchStoredConcerts.mockResolvedValue(shows(25, 'stored'))
+      const { getNearbyConcerts } = await loadEvents()
+
+      const result = await getNearbyConcerts(EVANSTON)
+
+      expect(isCovered).toHaveBeenCalledWith(EVANSTON.lat, EVANSTON.lng, 25)
+      expect(fetchStoredConcerts).toHaveBeenCalledWith(EVANSTON.lat, EVANSTON.lng, 25)
+      expect(fetchNearbyConcerts).not.toHaveBeenCalled()
+      expect(result).toEqual({ events: shows(25, 'stored'), widenedToKm: null })
+    })
+
+    it('mixes sources per circle: a covered city centre from the database, an uncovered suburb live', async () => {
+      isCovered.mockImplementation((lat) => lat === CRANBOURNE.city!.lat)
+      fetchStoredConcerts.mockResolvedValue([event('city')])
+      fetchNearbyConcerts.mockResolvedValue([event('local')])
+      const { getNearbyConcerts } = await loadEvents()
+
+      const result = await getNearbyConcerts(CRANBOURNE)
+
+      expect(fetchStoredConcerts).toHaveBeenCalledWith(-37.8142, 144.9632, 25)
+      expect(fetchNearbyConcerts.mock.calls).toEqual([[-38.0996, 145.2834, 25]])
+      expect(result.events.map((e) => e.id).sort()).toEqual(['city', 'local'])
+    })
+
+    it('widened searches that outgrow the stored area go live', async () => {
+      isCovered.mockImplementation((_lat, _lng, radiusKm) => radiusKm === 25)
+      fetchStoredConcerts.mockResolvedValue(shows(3, 'stored'))
+      eventsByRadius({ 50: shows(30, 'wider') })
+      const { getNearbyConcerts } = await loadEvents()
+
+      const result = await getNearbyConcerts(EVANSTON)
+
+      expect(radiiSearched()).toEqual([50])
+      expect(result).toEqual({ events: shows(30, 'wider'), widenedToKm: 50 })
+    })
+
+    it('falls back to Ticketmaster when /api/events fails', async () => {
+      vi.spyOn(console, 'warn').mockImplementation(() => {})
+      isCovered.mockReturnValue(true)
+      fetchStoredConcerts.mockRejectedValue(new Error('/api/events failed: 404'))
+      fetchNearbyConcerts.mockResolvedValue(shows(20, 'live'))
+      const { getNearbyConcerts } = await loadEvents()
+
+      const result = await getNearbyConcerts(EVANSTON)
+
+      expect(result.events).toEqual(shows(20, 'live'))
+      expect(console.warn).toHaveBeenCalled()
     })
   })
 

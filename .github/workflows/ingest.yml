@@ -1,0 +1,28 @@
+name: Daily event ingest
+
+# Loads every preloaded city's upcoming events (src/lib/concerts/cities.ts)
+# from Ticketmaster into the Neon database behind /api/events. Runs an hour
+# before the daily API check, whose live test confirms the data is fresh.
+on:
+  schedule:
+    - cron: '0 19 * * *' # 19:00 UTC = 5am AEST / 6am AEDT
+  workflow_dispatch: # "Run workflow" button, e.g. after adding a city
+
+permissions:
+  contents: read
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx tsx scripts/ingest.ts
+        env:
+          TICKETMASTER_API_KEY: ${{ secrets.TICKETMASTER_API_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
