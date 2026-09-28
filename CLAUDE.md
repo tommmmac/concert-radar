@@ -190,9 +190,15 @@ palette, since there's no fixed list of possible genre tags.
 
 **Routing**: `App.tsx` defines routes nested under a shared `Layout`
 (header + footer chrome): `/` → `LandingPage`, `/news` → `NewsPage`,
-`/map` → `MapPage`, plus `/about` and `/privacy` (linked from the footer,
+`/map` → `MapPage`, plus `/about`, `/privacy` and `/terms` (linked from the footer,
 sharing `pages/InfoPage.css`). Keep `Privacy.tsx` in sync if you add new
 `localStorage` keys or third-party services.
+
+**Attribution is a licence requirement, not decoration.** Spotify's
+developer terms require artist artwork to link back to Spotify (use
+`SpotifyArtistImage`, never a bare `<img>`), and Last.fm bios are CC
+BY-SA wiki text, so every place a bio is shown links to the artist's
+Last.fm page (`LastFmArtistDetails.url`).
 
 **Styling**: design tokens (colors, radii, shadows) live as CSS custom
 properties on `:root` in `src/index.css`; component-scoped CSS files

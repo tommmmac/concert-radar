@@ -24,6 +24,10 @@ describe('Last.fm artist.getinfo (live)', () => {
     expect(details?.bio).not.toMatch(/[<>]/)
   })
 
+  it("returns the artist's Last.fm page, which the bio attribution links to", () => {
+    expect(details?.url).toMatch(/^https:\/\/www\.last\.fm\/music\//)
+  })
+
   it('returns genre tags that pass the genre filter', () => {
     expect(details?.tags.length).toBeGreaterThan(0)
   })

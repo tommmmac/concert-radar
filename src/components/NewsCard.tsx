@@ -6,6 +6,7 @@ import { genreHue } from '../lib/artistInfo/genreColor'
 import { formatEventDate } from '../lib/formatDate'
 import { cleanArtistName } from '../lib/artistInfo/artistName'
 import type { ConcertEvent } from '../lib/concerts/ticketmaster'
+import SpotifyArtistImage from './SpotifyArtistImage'
 import './NewsCard.css'
 
 interface NewsCardProps {
@@ -24,7 +25,12 @@ function NewsCard({ event, isNew }: NewsCardProps) {
       {artistLoading ? (
         <div className="news-card-image skeleton" />
       ) : artist?.imageUrl ? (
-        <img className="news-card-image" src={artist.imageUrl} alt="" />
+        <SpotifyArtistImage
+          name={artist.name}
+          imageUrl={artist.imageUrl}
+          spotifyUrl={artist.spotifyUrl}
+          className="news-card-image"
+        />
       ) : (
         <div className="news-card-image news-card-image--placeholder" aria-hidden="true">
           🎵
@@ -65,9 +71,25 @@ function NewsCard({ event, isNew }: NewsCardProps) {
 
         <div className="news-card-footer">
           <span className="news-card-source">
-            Listed on Ticketmaster{details?.bio && ' · Bio from Last.fm'}
+            Listed on Ticketmaster
+            {artist?.imageUrl && artist.spotifyUrl && (
+              <>
+                {' · '}
+                <a href={artist.spotifyUrl} target="_blank" rel="noreferrer">
+                  Photo: Spotify
+                </a>
+              </>
+            )}
+            {details?.bio && details.url && (
+              <>
+                {' · '}
+                <a href={details.url} target="_blank" rel="noreferrer">
+                  Bio: Last.fm
+                </a>
+              </>
+            )}
           </span>
-          <a href={event.url} target="_blank" rel="noreferrer">
+          <a className="news-card-tickets" href={event.url} target="_blank" rel="noreferrer">
             Tickets →
           </a>
         </div>
