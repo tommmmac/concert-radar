@@ -13,6 +13,14 @@ export interface ConcertEvent {
   lng: number
 }
 
+interface DiscoveryVenue {
+  // Missing for many European venues (81 of 200 in Berlin) — see venueLabel.
+  name?: string
+  address?: { line1?: string }
+  city?: { name?: string }
+  location?: { latitude: string; longitude: string }
+}
+
 export interface DiscoveryResponse {
   _embedded?: {
     events?: Array<{
@@ -21,10 +29,7 @@ export interface DiscoveryResponse {
       url: string
       dates?: { start?: { localDate?: string } }
       _embedded?: {
-        venues?: Array<{
-          name: string
-          location?: { latitude: string; longitude: string }
-        }>
+        venues?: DiscoveryVenue[]
       }
     }>
   }
@@ -58,10 +63,15 @@ export function parseDiscoveryEvents(data: DiscoveryResponse): ConcertEvent[] {
         name: event.name,
         url: event.url,
         date: event.dates?.start?.localDate ?? null,
-        venueName: venue.name,
+        venueName: venueLabel(venue),
         lat: parseFloat(venue.location.latitude),
         lng: parseFloat(venue.location.longitude),
       }
     })
     .filter((e): e is ConcertEvent => e !== null)
+}
+
+/** Ticketmaster leaves some venues unnamed (common in Germany and the Netherlands); fall back to where it is. */
+function venueLabel(venue: DiscoveryVenue): string {
+  return venue.name?.trim() || venue.address?.line1?.trim() || venue.city?.name?.trim() || 'Venue TBA'
 }
