@@ -7,6 +7,7 @@ import { genreHue } from '../lib/artistInfo/genreColor'
 import { formatEventDate } from '../lib/formatDate'
 import { cleanArtistName } from '../lib/artistInfo/artistName'
 import type { ArtistGroup } from '../lib/concerts/artists'
+import SpotifyArtistImage from './SpotifyArtistImage'
 import './ArtistCard.css'
 
 interface ArtistCardProps {
@@ -25,7 +26,12 @@ function ArtistCard({ artist }: ArtistCardProps) {
         <div className="artist-card-image skeleton" />
       ) : (
         spotifyArtist?.imageUrl && (
-          <img className="artist-card-image" src={spotifyArtist.imageUrl} alt="" />
+          <SpotifyArtistImage
+            name={spotifyArtist.name}
+            imageUrl={spotifyArtist.imageUrl}
+            spotifyUrl={spotifyArtist.spotifyUrl}
+            className="artist-card-image"
+          />
         )
       )}
       <div className="artist-card-body">
@@ -52,6 +58,15 @@ function ArtistCard({ artist }: ArtistCardProps) {
             {detailsLoading
               ? 'Loading…'
               : details?.bio ?? 'No extra info available for this artist yet.'}
+            {/* Last.fm bios are CC BY-SA wiki text, so credit and link the source. */}
+            {details?.bio && details.url && (
+              <>
+                {' '}
+                <a href={details.url} target="_blank" rel="noreferrer">
+                  Bio from Last.fm
+                </a>
+              </>
+            )}
           </p>
         )}
 

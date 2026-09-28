@@ -3,6 +3,9 @@ import { cachedLookup } from './persistentCache'
 export interface LastFmArtistDetails {
   bio: string | null
   tags: string[]
+  // The artist's Last.fm page. Bios are CC BY-SA wiki text, so wherever one
+  // is shown it must link back here.
+  url: string | null
 }
 
 const API_KEY = import.meta.env.VITE_LASTFM_API_KEY
@@ -10,7 +13,8 @@ const HAS_API_KEY = Boolean(API_KEY) && API_KEY !== 'your_key_here'
 const BASE_URL = 'https://ws.audioscrobbler.com/2.0/'
 // Bump when the cached shape/filtering changes, to invalidate stale entries.
 // v3: v2 could hold nulls cached from failed requests (e.g. a bad key).
-const CACHE_NS = 'lastfm-artist-v3'
+// v4: added `url`.
+const CACHE_NS = 'lastfm-artist-v4'
 
 const cachedLookupArtist = cachedLookup(CACHE_NS, lookupArtist)
 
@@ -33,6 +37,7 @@ async function lookupArtist(artistName: string): Promise<LastFmArtistDetails | n
 
   const data = (await res.json()) as {
     artist?: {
+      url?: string
       bio?: { summary?: string }
       tags?: { tag?: Array<{ name: string }> }
     }
@@ -50,7 +55,7 @@ async function lookupArtist(artistName: string): Promise<LastFmArtistDetails | n
     .filter(isLikelyGenreTag)
     .slice(0, 3)
 
-  return { bio, tags }
+  return { bio, tags, url: data.artist.url ?? null }
 }
 
 // Last.fm tags are arbitrary user-submitted strings, not a curated genre

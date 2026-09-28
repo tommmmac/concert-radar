@@ -9,6 +9,7 @@ function Footer() {
       <nav className="footer-links">
         <Link to="/about">About</Link>
         <Link to="/privacy">Privacy</Link>
+        <Link to="/terms">Terms</Link>
         <a href="https://github.com/tommmmac/concert-radar" target="_blank" rel="noreferrer">
           GitHub
         </a>

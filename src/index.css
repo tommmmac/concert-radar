@@ -125,3 +125,11 @@ h1, h2, h3, .brand {
     transform: scale(0.75);
   }
 }
+
+/* Artist photos link to Spotify (SpotifyArtistImage); keep the link box the
+   size of the image so card layouts don't shift. */
+.spotify-artist-image-link {
+  display: block;
+  flex-shrink: 0;
+  line-height: 0;
+}

@@ -107,7 +107,11 @@
   color: var(--color-text-muted);
 }
 
-.news-card-footer a {
+.news-card-source a {
+  color: inherit;
+}
+
+.news-card-tickets {
   flex-shrink: 0;
   padding: 4px 12px;
   border-radius: 999px;
@@ -118,7 +122,7 @@
   text-decoration: none;
 }
 
-.news-card-footer a:hover {
+.news-card-tickets:hover {
   background: var(--color-accent-strong);
 }
 

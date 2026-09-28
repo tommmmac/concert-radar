@@ -15,8 +15,8 @@ function stubFetch(body: unknown, status = 200) {
   return fetchMock
 }
 
-function artistInfo({ summary = '', tags = [] as string[] } = {}) {
-  return { artist: { bio: { summary }, tags: { tag: tags.map((name) => ({ name })) } } }
+function artistInfo({ summary = '', tags = [] as string[], url = undefined as string | undefined } = {}) {
+  return { artist: { url, bio: { summary }, tags: { tag: tags.map((name) => ({ name })) } } }
 }
 
 afterEach(() => {
@@ -63,6 +63,15 @@ describe('fetchArtistDetails', () => {
     const { fetchArtistDetails } = await loadLastFm()
 
     expect((await fetchArtistDetails('The Chats'))?.tags).toEqual(['punk', 'seen live', 'australian'])
+  })
+
+  it("returns the artist's Last.fm page URL, or null if missing", async () => {
+    stubFetch(artistInfo({ url: 'https://www.last.fm/music/The+Chats' }))
+    const { fetchArtistDetails } = await loadLastFm()
+    expect((await fetchArtistDetails('The Chats'))?.url).toBe('https://www.last.fm/music/The+Chats')
+
+    stubFetch(artistInfo())
+    expect((await fetchArtistDetails('Lavern'))?.url).toBeNull()
   })
 
   it('returns null for an artist Last.fm does not know', async () => {
