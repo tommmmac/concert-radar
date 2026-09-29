@@ -5,7 +5,7 @@ import { fetchArtistInfo } from '../lib/artistInfo/spotify'
 import { fetchArtistDetails } from '../lib/artistInfo/lastfm'
 import { genreHue } from '../lib/artistInfo/genreColor'
 import { formatEventDate } from '../lib/formatDate'
-import { cleanArtistName } from '../lib/artistInfo/artistName'
+import { lookupArtistName } from '../lib/artistInfo/artistName'
 import type { ArtistGroup } from '../lib/concerts/artists'
 import SpotifyArtistImage from './SpotifyArtistImage'
 import './ArtistCard.css'
@@ -15,7 +15,8 @@ interface ArtistCardProps {
 }
 
 function ArtistCard({ artist }: ArtistCardProps) {
-  const lookupName = cleanArtistName(artist.name)
+  // A group is one event title, so its first event speaks for all of them.
+  const lookupName = lookupArtistName(artist.events[0])
   const { data: spotifyArtist, loading: artistLoading } = useLookup(lookupName, fetchArtistInfo)
   const { data: details, loading: detailsLoading } = useLookup(lookupName, fetchArtistDetails)
   const [detailsOpen, setDetailsOpen] = useState(false)

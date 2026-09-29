@@ -61,6 +61,8 @@ describe('fetchNearbyConcerts', () => {
         venueName: 'Sidney Myer Music Bowl',
         lat: -37.8281,
         lng: 144.9789,
+        genre: null,
+        artistName: null,
       },
     ])
   })

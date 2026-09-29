@@ -1,3 +1,7 @@
+.map-filter {
+  margin-bottom: 16px;
+}
+
 .map-page {
   display: flex;
   align-items: stretch;
