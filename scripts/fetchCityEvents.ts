@@ -47,8 +47,9 @@ export async function fetchCityEvents(city: IngestCity, options: FetchOptions): 
       await sleep(REQUEST_GAP_MS)
       const res = await fetch(`${DISCOVERY_URL}?${params}`)
       if (res.ok) return (await res.json()) as DiscoveryResponse
-      // 429 = over the per-second limit: back off and retry a couple of times.
-      if (res.status === 429 && attempt < 3) {
+      // 429 = over the per-second limit; 5xx = a blip on Ticketmaster's side
+      // (a 502 once cost New York a whole day). Back off and retry.
+      if ((res.status === 429 || res.status >= 500) && attempt < 3) {
         await sleep(2000 * attempt)
         continue
       }

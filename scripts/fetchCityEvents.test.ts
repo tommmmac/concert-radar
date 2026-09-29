@@ -110,6 +110,15 @@ describe('fetchCityEvents', () => {
     expect(events.map((e) => e.id)).toEqual(['a'])
   })
 
+  it('retries a temporary Ticketmaster server error (5xx)', async () => {
+    let calls = 0
+    stubTicketmaster(() => (++calls === 1 ? new Response('', { status: 502 }) : page(['a'], 1, 1)))
+
+    const events = await fetchCityEvents(MELBOURNE, { apiKey: 'key', sleep: noSleep, now: NOW })
+
+    expect(events.map((e) => e.id)).toEqual(['a'])
+  })
+
   it('throws on other errors, so the ingest keeps that city\'s existing data', async () => {
     stubTicketmaster(() => new Response('', { status: 401 }))
 
