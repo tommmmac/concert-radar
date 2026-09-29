@@ -4,6 +4,7 @@ import { fetchArtistInfo } from '../lib/artistInfo/spotify'
 import { fetchArtistDetails } from '../lib/artistInfo/lastfm'
 import { genreHue } from '../lib/artistInfo/genreColor'
 import { formatEventDate } from '../lib/formatDate'
+import { isJustAnnounced } from '../lib/concerts/announced'
 import { cleanArtistName } from '../lib/artistInfo/artistName'
 import type { ConcertEvent } from '../lib/concerts/ticketmaster'
 import SpotifyArtistImage from './SpotifyArtistImage'
@@ -39,7 +40,13 @@ function NewsCard({ event, isNew }: NewsCardProps) {
 
       <div className="news-card-body">
         <div className="news-card-heading">
-          {isNew && <span className="news-card-badge">New</span>}
+          {/* "New" is personal (since your last visit), so it wins over the
+              shared "Just announced" when both apply. */}
+          {isNew ? (
+            <span className="news-card-badge">New</span>
+          ) : (
+            isJustAnnounced(event) && <span className="news-card-badge news-card-badge--announced">Just announced</span>
+          )}
           <h3>{event.name}</h3>
         </div>
         <p className="news-card-meta">

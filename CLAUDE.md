@@ -133,6 +133,16 @@ and sort order (new first). Cards are revealed 12 at a time
 (`PAGE_SIZE` in `NewsFeed.tsx`) because each one triggers its own
 Spotify + Last.fm lookup.
 
+**"Just announced"** (`lib/concerts/announced.ts`) is the shared,
+no-login counterpart: the ingest stamps each event's `first_seen_at` when
+it first finds it (never updated afterwards), `/api/events` returns it as
+`announcedAt`, and the News card shows "Just announced" for 7 days
+(`JUST_ANNOUNCED_DAYS`). A city's first successful ingest is a
+*baseline* (tracked in the `ingested_cities` table): its events get
+`first_seen_at = NULL`, so adding a city doesn't flag every show it
+already had. Only database-served events have it — live Ticketmaster
+results never get the badge. "New" (personal) outranks it on a card.
+
 **Location search** (`lib/geocode.ts`): Nominatim with
 `featureType=settlement` (so "Cranbourne" isn't a railway station) and a
 `viewbox` bias around the current location (so it isn't the English

@@ -65,7 +65,11 @@ describe('getNearbyConcerts', () => {
       const pending = getNearbyConcerts(CRANBOURNE)
       await vi.runAllTimersAsync() // skip the fixtures' simulated 300ms delay
 
-      expect(await pending).toEqual({ events: MOCK_EVENTS, widenedToKm: null })
+      // By ID: loadEvents re-imports the fixtures, whose announcedAt is
+      // relative to load time, so the two copies differ by milliseconds.
+      const result = await pending
+      expect(result.events.map((e) => e.id)).toEqual(MOCK_EVENTS.map((e) => e.id))
+      expect(result.widenedToKm).toBeNull()
       expect(fetchNearbyConcerts).not.toHaveBeenCalled()
     })
   })
