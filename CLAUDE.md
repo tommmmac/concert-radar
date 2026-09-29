@@ -212,7 +212,23 @@ expand on `ArtistCard`, a 3-line excerpt on `NewsCard`), from a single
 request (`fetchArtistDetails`). Note: Spotify's artist `genres` field was tried first and dropped
 — it now returns empty consistently (even for major artists), a known
 recent Spotify API regression — so Last.fm's community tags are the
-actual genre source, not Spotify. Genre pill colors are deterministic,
+actual genre source for the pills on cards, not Spotify.
+
+**Genre filter** (`lib/concerts/genres.ts`, `GenreFilter`) uses a
+different source: Ticketmaster's own top-level `classifications` genre
+("Rock", "Hip-Hop/Rap", ~15 fixed values), parsed in `discovery.ts` so
+both the ingest and the live search get it. A fixed list makes tidy
+chips; Last.fm's free-text tags ("seen live", "australian") would not.
+The selection lives in `Layout` (`selectedGenres`) so News and Map
+share it; each page filters its own copy, so `events`/`venues` in the
+context stay unfiltered. The same parse also keeps Ticketmaster's
+headline act (`artistName`), which `lookupArtistName()` prefers over
+`cleanArtistName(event.name)` for Spotify/Last.fm lookups.
+
+Spotify's Developer Terms (IV.3.1.a) forbid storing "databases of
+Spotify Content", so artist photos stay per-visitor lookups (edge- and
+`localStorage`-cached) — don't move them into the ingest/DB. Last.fm
+data may be stored (under its 100 MB cap). Genre pill colors are deterministic,
 hashed from the genre string (`lib/artistInfo/genreColor.ts`), not a maintained
 palette, since there's no fixed list of possible genre tags.
 

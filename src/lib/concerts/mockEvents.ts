@@ -10,6 +10,7 @@ export const MOCK_EVENTS: ConcertEvent[] = [
   {
     id: 'mock-1',
     name: 'James Massiah (UK)',
+    genre: 'Hip-Hop/Rap',
     url: '#',
     date: '2026-09-24',
     venueName: 'The Night Cat',
@@ -20,6 +21,7 @@ export const MOCK_EVENTS: ConcertEvent[] = [
     id: 'mock-2',
     announcedAt: daysAgo(1),
     name: 'Clementine Douglas',
+    genre: 'Dance/Electronic',
     url: '#',
     date: '2026-09-25',
     venueName: 'The Night Cat',
@@ -30,6 +32,7 @@ export const MOCK_EVENTS: ConcertEvent[] = [
     id: 'mock-3',
     announcedAt: daysAgo(5),
     name: 'Lavern',
+    genre: 'Dance/Electronic',
     url: '#',
     date: '2026-10-02',
     venueName: 'The Night Cat',
@@ -39,6 +42,7 @@ export const MOCK_EVENTS: ConcertEvent[] = [
   {
     id: 'mock-4',
     name: 'Cuban Fire!',
+    genre: 'Jazz',
     url: '#',
     date: '2026-10-09',
     venueName: 'The Thornbury Theatre',
@@ -48,6 +52,7 @@ export const MOCK_EVENTS: ConcertEvent[] = [
   {
     id: 'mock-5',
     name: 'Iron Maiden',
+    genre: 'Metal',
     url: '#',
     date: '2026-11-14',
     venueName: 'Rod Laver Arena',
@@ -57,6 +62,7 @@ export const MOCK_EVENTS: ConcertEvent[] = [
   {
     id: 'mock-6',
     name: 'Fontaines D.C.',
+    genre: 'Rock',
     url: '#',
     date: '2026-10-18',
     venueName: 'Festival Hall',
@@ -66,6 +72,7 @@ export const MOCK_EVENTS: ConcertEvent[] = [
   {
     id: 'mock-7',
     name: 'Baker Boy',
+    genre: 'Hip-Hop/Rap',
     url: '#',
     date: '2026-11-01',
     venueName: 'Forum Melbourne',
@@ -75,6 +82,7 @@ export const MOCK_EVENTS: ConcertEvent[] = [
   {
     id: 'mock-8',
     name: 'King Stingray',
+    genre: 'Rock',
     url: '#',
     date: '2026-11-01',
     venueName: 'Forum Melbourne',
@@ -84,6 +92,7 @@ export const MOCK_EVENTS: ConcertEvent[] = [
   {
     id: 'mock-9',
     name: 'Tash Sultana',
+    genre: 'Alternative',
     url: '#',
     date: '2026-12-05',
     venueName: 'Sidney Myer Music Bowl',
@@ -93,6 +102,7 @@ export const MOCK_EVENTS: ConcertEvent[] = [
   {
     id: 'mock-10',
     name: 'The Chats',
+    genre: 'Rock',
     url: '#',
     date: '2026-10-30',
     venueName: '170 Russell',

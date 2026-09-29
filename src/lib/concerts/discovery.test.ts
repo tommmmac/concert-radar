@@ -34,3 +34,29 @@ describe('parseDiscoveryEvents venue names', () => {
     expect(venueName({})).toBe('Venue TBA')
   })
 })
+
+describe('parseDiscoveryEvents genre and artist', () => {
+  function parseOne(extra: Record<string, unknown>) {
+    const data = withVenue({})
+    Object.assign(data._embedded.events[0], extra)
+    return parseDiscoveryEvents(data)[0]
+  }
+
+  it("reads the top-level genre and the headline act", () => {
+    const event = parseOne({
+      classifications: [{ genre: { name: 'Pop' }, subGenre: { name: 'Electro Pop' } }],
+      _embedded: {
+        venues: [{ location: { latitude: '1', longitude: '2' } }],
+        attractions: [{ name: 'Harry Styles' }, { name: 'Baby J' }],
+      },
+    })
+    expect(event.genre).toBe('Pop')
+    expect(event.artistName).toBe('Harry Styles')
+  })
+
+  it('treats a missing or "Undefined" genre and a missing act as unknown', () => {
+    expect(parseOne({}).genre).toBeNull()
+    expect(parseOne({}).artistName).toBeNull()
+    expect(parseOne({ classifications: [{ genre: { name: 'Undefined' } }] }).genre).toBeNull()
+  })
+})

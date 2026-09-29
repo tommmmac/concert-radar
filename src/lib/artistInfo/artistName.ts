@@ -31,3 +31,12 @@ export function cleanArtistName(eventName: string): string {
   // original is a better guess than an empty lookup.
   return name || eventName.trim()
 }
+
+/**
+ * The name to look an event's artist up by on Spotify and Last.fm:
+ * Ticketmaster's own headline act when it lists one, otherwise a cleaned-up
+ * event title.
+ */
+export function lookupArtistName(event: { name: string; artistName?: string | null }): string {
+  return event.artistName?.trim() || cleanArtistName(event.name)
+}

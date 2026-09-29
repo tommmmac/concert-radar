@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { cleanArtistName } from './artistName'
+import { cleanArtistName, lookupArtistName } from './artistName'
 
 describe('cleanArtistName', () => {
   it('strips trailing bracketed tags', () => {
@@ -32,5 +32,18 @@ describe('cleanArtistName', () => {
 
   it('falls back to the original if cleaning would leave nothing', () => {
     expect(cleanArtistName('(Secret Show)')).toBe('(Secret Show)')
+  })
+})
+
+describe('lookupArtistName', () => {
+  it("prefers Ticketmaster's headline act over the event title", () => {
+    expect(lookupArtistName({ name: 'Harry Styles: Together, Together', artistName: 'Harry Styles' })).toBe(
+      'Harry Styles',
+    )
+  })
+
+  it('falls back to the cleaned event title when no act is listed', () => {
+    expect(lookupArtistName({ name: 'James Massiah (UK)', artistName: null })).toBe('James Massiah')
+    expect(lookupArtistName({ name: 'James Massiah (UK)' })).toBe('James Massiah')
   })
 })

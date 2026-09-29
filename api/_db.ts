@@ -31,6 +31,10 @@ export async function ensureSchema(): Promise<void> {
   // When the ingest first saw each event, for the "Just announced" badge.
   // Added after launch, so existing rows start as NULL (= unknown).
   await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS first_seen_at timestamptz`
+  // For the genre filter and artist lookups. Unlike first_seen_at these are
+  // rewritten every run, so existing rows fill in on the next ingest.
+  await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS genre text`
+  await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS artist_name text`
   // Cities that have completed at least one ingest. A city's first run is
   // its baseline: everything it finds was already on sale, not announced.
   await sql`
@@ -71,7 +75,7 @@ export async function upsertEvents(
   // One statement per city: columns go in as parallel arrays and unnest()
   // turns them back into rows.
   await sql`
-    INSERT INTO events (id, name, url, date, venue_name, lat, lng, city, last_seen_at, first_seen_at)
+    INSERT INTO events (id, name, url, date, venue_name, lat, lng, genre, artist_name, city, last_seen_at, first_seen_at)
     SELECT u.*, ${city}, ${seenAt.toISOString()}::timestamptz, ${firstSeenAt}::timestamptz
     FROM unnest(
       ${events.map((e) => e.id)}::text[],
@@ -80,11 +84,14 @@ export async function upsertEvents(
       ${events.map((e) => e.date)}::date[],
       ${events.map((e) => e.venueName)}::text[],
       ${events.map((e) => e.lat)}::float8[],
-      ${events.map((e) => e.lng)}::float8[]
+      ${events.map((e) => e.lng)}::float8[],
+      ${events.map((e) => e.genre ?? null)}::text[],
+      ${events.map((e) => e.artistName ?? null)}::text[]
     ) AS u
     ON CONFLICT (id) DO UPDATE SET
       name = EXCLUDED.name, url = EXCLUDED.url, date = EXCLUDED.date,
       venue_name = EXCLUDED.venue_name, lat = EXCLUDED.lat, lng = EXCLUDED.lng,
+      genre = EXCLUDED.genre, artist_name = EXCLUDED.artist_name,
       city = EXCLUDED.city, last_seen_at = EXCLUDED.last_seen_at
       -- first_seen_at deliberately left out: it keeps its first value.`
 }
@@ -128,7 +135,8 @@ export async function findEventsNear(lat: number, lng: number, radiusKm: number)
   const sql = getSql()
   const box = boundingBox(lat, lng, radiusKm)
   const rows = (await sql`
-    SELECT id, name, url, to_char(date, 'YYYY-MM-DD') AS date, venue_name, lat, lng, last_seen_at, first_seen_at
+    SELECT id, name, url, to_char(date, 'YYYY-MM-DD') AS date, venue_name, lat, lng, genre, artist_name,
+      last_seen_at, first_seen_at
     FROM events
     WHERE lat BETWEEN ${box.minLat} AND ${box.maxLat}
       AND lng BETWEEN ${box.minLng} AND ${box.maxLng}
@@ -146,6 +154,8 @@ export async function findEventsNear(lat: number, lng: number, radiusKm: number)
     venue_name: string
     lat: number
     lng: number
+    genre: string | null
+    artist_name: string | null
     last_seen_at: string | Date
     first_seen_at: string | Date | null
   }>
@@ -162,6 +172,8 @@ export async function findEventsNear(lat: number, lng: number, radiusKm: number)
       venueName: row.venue_name,
       lat: row.lat,
       lng: row.lng,
+      genre: row.genre,
+      artistName: row.artist_name,
       announcedAt: row.first_seen_at === null ? null : new Date(row.first_seen_at).toISOString(),
     }
   })
