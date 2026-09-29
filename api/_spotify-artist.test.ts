@@ -104,7 +104,7 @@ describe('GET /api/spotify-artist', () => {
     const url = new URL(String(searchUrl))
     expect(url.searchParams.get('q')).toBe('Baker Boy')
     expect(url.searchParams.get('type')).toBe('artist')
-    expect(url.searchParams.get('limit')).toBe('1')
+    expect(url.searchParams.get('limit')).toBe('10')
     expect(init?.headers).toEqual({ Authorization: 'Bearer tok' })
   })
 
@@ -138,6 +138,43 @@ describe('GET /api/spotify-artist', () => {
     expect(sent.status).toBe(200)
     expect(sent.body).toBeNull()
     expect(sent.headers['Cache-Control']).toContain('s-maxage=86400')
+  })
+
+  it("skips Spotify's guesses whose name doesn't match, taking the first that does", async () => {
+    const stanKenton = { ...BAKER_BOY, name: 'Stan Kenton' }
+    stubSpotify(() => searchResult(stanKenton, BAKER_BOY))
+    const handler = await loadHandler()
+    const { res, sent } = fakeResponse()
+
+    await handler(request({ name: 'Baker Boy' }), res)
+
+    expect(sent.body).toMatchObject({ name: 'Baker Boy' })
+  })
+
+  it('returns null rather than a stranger when no result has that name', async () => {
+    stubSpotify(() => searchResult({ ...BAKER_BOY, name: 'Stan Kenton' }))
+    const handler = await loadHandler()
+    const { res, sent } = fakeResponse()
+
+    await handler(request({ name: 'Cuban Fire!' }), res)
+
+    expect(sent.status).toBe(200)
+    expect(sent.body).toBeNull()
+  })
+
+  it.each([
+    ['Beyonce', 'Beyoncé'],
+    ['Fontaines DC', 'Fontaines D.C.'],
+    ['CHATS', 'The Chats'],
+    ['Simon and Garfunkel', 'Simon & Garfunkel'],
+  ])('matches %s to %s despite accents, punctuation, case, "the" and "&"', async (query, spotifyName) => {
+    stubSpotify(() => searchResult({ ...BAKER_BOY, name: spotifyName }))
+    const handler = await loadHandler()
+    const { res, sent } = fakeResponse()
+
+    await handler(request({ name: query }), res)
+
+    expect(sent.body).toMatchObject({ name: spotifyName })
   })
 
   it('reuses the token across warm invocations', async () => {
