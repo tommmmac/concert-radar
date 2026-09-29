@@ -41,6 +41,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
     }
 
+    // Cache at the edge/browser for a day — artist images don't change
+    // often, and this keeps repeat lookups off Spotify's rate limit. That
+    // includes "no match": small local acts often aren't on Spotify, and
+    // without it every visitor re-asks about them.
+    res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate')
+
     const artist = searchData.artists.items[0]
     if (!artist) {
       res.status(200).json(null)
@@ -53,9 +59,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       spotifyUrl: artist.external_urls.spotify,
     }
 
-    // Cache at the edge/browser for a day — artist images don't change
-    // often, and this keeps repeat lookups off Spotify's rate limit.
-    res.setHeader('Cache-Control', 's-maxage=86400, stale-while-revalidate')
     res.status(200).json(result)
   } catch (err) {
     res.status(502).json({ error: err instanceof Error ? err.message : 'Spotify lookup failed' })

@@ -128,7 +128,7 @@ describe('GET /api/spotify-artist', () => {
     expect(sent.body).toMatchObject({ imageUrl: null })
   })
 
-  it('returns 200 null when no artist matches', async () => {
+  it('returns 200 null when no artist matches, edge-cached like a match', async () => {
     stubSpotify(() => searchResult())
     const handler = await loadHandler()
     const { res, sent } = fakeResponse()
@@ -137,6 +137,7 @@ describe('GET /api/spotify-artist', () => {
 
     expect(sent.status).toBe(200)
     expect(sent.body).toBeNull()
+    expect(sent.headers['Cache-Control']).toContain('s-maxage=86400')
   })
 
   it('reuses the token across warm invocations', async () => {
