@@ -2,6 +2,10 @@ import type { ConcertEvent } from './ticketmaster'
 
 // Hand-authored fixtures for UI work without burning Ticketmaster API calls.
 // Coordinates are real Melbourne venues; events/dates are made up.
+
+// Relative to page load, so a couple of cards always show "Just announced".
+const daysAgo = (days: number) => new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()
+
 export const MOCK_EVENTS: ConcertEvent[] = [
   {
     id: 'mock-1',
@@ -14,6 +18,7 @@ export const MOCK_EVENTS: ConcertEvent[] = [
   },
   {
     id: 'mock-2',
+    announcedAt: daysAgo(1),
     name: 'Clementine Douglas',
     url: '#',
     date: '2026-09-25',
@@ -23,6 +28,7 @@ export const MOCK_EVENTS: ConcertEvent[] = [
   },
   {
     id: 'mock-3',
+    announcedAt: daysAgo(5),
     name: 'Lavern',
     url: '#',
     date: '2026-10-02',

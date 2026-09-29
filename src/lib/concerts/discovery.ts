@@ -11,6 +11,12 @@ export interface ConcertEvent {
   venueName: string
   lat: number
   lng: number
+  /**
+   * When the daily ingest first saw this event (ISO timestamp). Only events
+   * served from the database have it, and it's null for ones that were
+   * already listed when their city started being tracked.
+   */
+  announcedAt?: string | null
 }
 
 interface DiscoveryVenue {

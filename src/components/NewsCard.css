@@ -59,6 +59,11 @@
   letter-spacing: 0.03em;
 }
 
+.news-card-badge--announced {
+  background: var(--color-accent-soft);
+  color: var(--color-accent-text);
+}
+
 .news-card-meta {
   margin: 4px 0 8px;
   font-size: 13px;

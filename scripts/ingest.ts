@@ -3,7 +3,7 @@
 // Ticketmaster call per visitor. Run by .github/workflows/ingest.yml, or
 // locally with `npm run ingest` (reads .env).
 import { CITIES } from '../src/lib/concerts/cities.js'
-import { deleteStaleEvents, ensureSchema, upsertEvents } from '../api/_db.js'
+import { deleteStaleEvents, ensureSchema, findIngestedCities, markCityIngested, upsertEvents } from '../api/_db.js'
 import { fetchCityEvents } from './fetchCityEvents.js'
 
 // CI passes the repo secret as TICKETMASTER_API_KEY; locally, .env only
@@ -20,6 +20,7 @@ if (!process.env.DATABASE_URL) {
 
 const runStartedAt = new Date()
 await ensureSchema()
+const ingestedBefore = await findIngestedCities()
 
 const succeeded: string[] = []
 const failed: string[] = []
@@ -27,7 +28,10 @@ const failed: string[] = []
 for (const city of CITIES) {
   try {
     const events = await fetchCityEvents(city, { apiKey })
-    await upsertEvents(city.slug, events, runStartedAt)
+    // A city's first successful run only records what's already on sale,
+    // so adding a city doesn't flag all its shows as "Just announced".
+    await upsertEvents(city.slug, events, runStartedAt, { baseline: !ingestedBefore.has(city.slug) })
+    await markCityIngested(city.slug, runStartedAt)
     succeeded.push(city.slug)
     console.log(`${city.name}: ${events.length} events`)
   } catch (err) {

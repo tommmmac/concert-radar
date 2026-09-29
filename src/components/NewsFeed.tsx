@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { ConcertEvent } from '../lib/concerts/ticketmaster'
 import { distanceKm, type GeocodedLocation } from '../lib/geocode'
+import { isJustAnnounced } from '../lib/concerts/announced'
 import NewsCard from './NewsCard'
 import './NewsFeed.css'
 
@@ -32,17 +33,20 @@ function NewsFeed({
 }: NewsFeedProps) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
 
-  // New announcements first; sort is stable, so each group keeps date order.
-  const sortedEvents = [...events].sort(
-    (a, b) => Number(newEventIds.has(b.id)) - Number(newEventIds.has(a.id)),
-  )
+  // New since your last visit first, then just announced, then the rest;
+  // sort is stable, so each group keeps date order.
+  const rank = (event: ConcertEvent) => (newEventIds.has(event.id) ? 2 : isJustAnnounced(event) ? 1 : 0)
+  const sortedEvents = [...events].sort((a, b) => rank(b) - rank(a))
   const newCount = newEventIds.size
+  const announcedCount = events.filter((event) => isJustAnnounced(event)).length
   const ready = !loading && !error
 
   // A first visit to an area has no "last visit" to compare against, so say
   // tracking starts now rather than claiming nothing is new.
   const newsSummary = isFirstVisit
-    ? `First look at ${location.label} — we'll flag newly announced shows from your next visit.`
+    ? announcedCount > 0
+      ? `First look at ${location.label} — ${announcedCount} ${announcedCount === 1 ? 'show' : 'shows'} announced this week, and we'll flag anything new from your next visit.`
+      : `First look at ${location.label} — we'll flag newly announced shows from your next visit.`
     : newCount > 0
       ? `${newCount} new ${newCount === 1 ? 'announcement' : 'announcements'} since your last visit — look for the New badge.`
       : "You're all caught up — no new announcements since your last visit."

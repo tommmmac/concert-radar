@@ -28,17 +28,51 @@ export async function ensureSchema(): Promise<void> {
     )`
   // Distance queries start with a latitude band (see boundingBox).
   await sql`CREATE INDEX IF NOT EXISTS events_lat_idx ON events (lat)`
+  // When the ingest first saw each event, for the "Just announced" badge.
+  // Added after launch, so existing rows start as NULL (= unknown).
+  await sql`ALTER TABLE events ADD COLUMN IF NOT EXISTS first_seen_at timestamptz`
+  // Cities that have completed at least one ingest. A city's first run is
+  // its baseline: everything it finds was already on sale, not announced.
+  await sql`
+    CREATE TABLE IF NOT EXISTS ingested_cities (
+      slug text PRIMARY KEY,
+      first_ingested_at timestamptz NOT NULL
+    )`
 }
 
-/** Inserts or refreshes one city's events, stamping them as seen in this run. */
-export async function upsertEvents(city: string, events: ConcertEvent[], seenAt: Date): Promise<void> {
+export async function findIngestedCities(): Promise<Set<string>> {
+  const sql = getSql()
+  const rows = (await sql`SELECT slug FROM ingested_cities`) as Array<{ slug: string }>
+  return new Set(rows.map((row) => row.slug))
+}
+
+export async function markCityIngested(city: string, at: Date): Promise<void> {
+  const sql = getSql()
+  await sql`
+    INSERT INTO ingested_cities (slug, first_ingested_at)
+    VALUES (${city}, ${at.toISOString()}::timestamptz)
+    ON CONFLICT (slug) DO NOTHING`
+}
+
+/**
+ * Inserts or refreshes one city's events, stamping them as seen in this run.
+ * A new row's first_seen_at is this run, unless it's the city's `baseline`
+ * run (see ensureSchema); an existing row's is never changed.
+ */
+export async function upsertEvents(
+  city: string,
+  events: ConcertEvent[],
+  seenAt: Date,
+  { baseline }: { baseline: boolean },
+): Promise<void> {
   if (events.length === 0) return
   const sql = getSql()
+  const firstSeenAt = baseline ? null : seenAt.toISOString()
   // One statement per city: columns go in as parallel arrays and unnest()
   // turns them back into rows.
   await sql`
-    INSERT INTO events (id, name, url, date, venue_name, lat, lng, city, last_seen_at)
-    SELECT u.*, ${city}, ${seenAt.toISOString()}::timestamptz
+    INSERT INTO events (id, name, url, date, venue_name, lat, lng, city, last_seen_at, first_seen_at)
+    SELECT u.*, ${city}, ${seenAt.toISOString()}::timestamptz, ${firstSeenAt}::timestamptz
     FROM unnest(
       ${events.map((e) => e.id)}::text[],
       ${events.map((e) => e.name)}::text[],
@@ -51,7 +85,8 @@ export async function upsertEvents(city: string, events: ConcertEvent[], seenAt:
     ON CONFLICT (id) DO UPDATE SET
       name = EXCLUDED.name, url = EXCLUDED.url, date = EXCLUDED.date,
       venue_name = EXCLUDED.venue_name, lat = EXCLUDED.lat, lng = EXCLUDED.lng,
-      city = EXCLUDED.city, last_seen_at = EXCLUDED.last_seen_at`
+      city = EXCLUDED.city, last_seen_at = EXCLUDED.last_seen_at
+      -- first_seen_at deliberately left out: it keeps its first value.`
 }
 
 /**
@@ -93,7 +128,7 @@ export async function findEventsNear(lat: number, lng: number, radiusKm: number)
   const sql = getSql()
   const box = boundingBox(lat, lng, radiusKm)
   const rows = (await sql`
-    SELECT id, name, url, to_char(date, 'YYYY-MM-DD') AS date, venue_name, lat, lng, last_seen_at
+    SELECT id, name, url, to_char(date, 'YYYY-MM-DD') AS date, venue_name, lat, lng, last_seen_at, first_seen_at
     FROM events
     WHERE lat BETWEEN ${box.minLat} AND ${box.maxLat}
       AND lng BETWEEN ${box.minLng} AND ${box.maxLng}
@@ -112,6 +147,7 @@ export async function findEventsNear(lat: number, lng: number, radiusKm: number)
     lat: number
     lng: number
     last_seen_at: string | Date
+    first_seen_at: string | Date | null
   }>
 
   let updatedAt: string | null = null
@@ -126,6 +162,7 @@ export async function findEventsNear(lat: number, lng: number, radiusKm: number)
       venueName: row.venue_name,
       lat: row.lat,
       lng: row.lng,
+      announcedAt: row.first_seen_at === null ? null : new Date(row.first_seen_at).toISOString(),
     }
   })
 
