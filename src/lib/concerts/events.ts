@@ -1,4 +1,6 @@
 import { fetchNearbyConcerts, type ConcertEvent } from './ticketmaster'
+import { fetchStoredConcerts } from './storedEvents'
+import { isCovered } from './coverage'
 import { fetchMockConcerts } from './mockEvents'
 import { mergeAreaEvents, widenUntilEnough } from './areas'
 import type { GeocodedLocation } from '../geocode'
@@ -17,6 +19,23 @@ export interface NearbyConcerts {
   widenedToKm: number | null
 }
 
+/**
+ * One search circle. Inside a preloaded city it's answered from the
+ * database (/api/events); anywhere else — or if /api/events can't answer,
+ * e.g. under plain `npm run dev`, which doesn't serve /api — Ticketmaster
+ * is searched live, as before.
+ */
+async function fetchAt(lat: number, lng: number, radiusKm = RADII_KM[0]): Promise<ConcertEvent[]> {
+  if (isCovered(lat, lng, radiusKm)) {
+    try {
+      return await fetchStoredConcerts(lat, lng, radiusKm)
+    } catch (err) {
+      console.warn('Stored events unavailable, searching Ticketmaster live instead:', err)
+    }
+  }
+  return fetchNearbyConcerts(lat, lng, radiusKm)
+}
+
 export async function getNearbyConcerts(location: GeocodedLocation): Promise<NearbyConcerts> {
   if (USE_MOCK_DATA) return { events: await fetchMockConcerts(), widenedToKm: null }
 
@@ -24,14 +43,14 @@ export async function getNearbyConcerts(location: GeocodedLocation): Promise<Nea
   // sees Melbourne's venues as well as what's on locally.
   if (location.city) {
     const [local, city] = await Promise.all([
-      fetchNearbyConcerts(location.lat, location.lng),
-      fetchNearbyConcerts(location.city.lat, location.city.lng),
+      fetchAt(location.lat, location.lng),
+      fetchAt(location.city.lat, location.city.lng),
     ])
     return { events: mergeAreaEvents(local, city), widenedToKm: null }
   }
 
   const { events, radiusKm } = await widenUntilEnough(
-    (radius) => fetchNearbyConcerts(location.lat, location.lng, radius),
+    (radius) => fetchAt(location.lat, location.lng, radius),
     RADII_KM,
     MIN_EVENTS,
   )

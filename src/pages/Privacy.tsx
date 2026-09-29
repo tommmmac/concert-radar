@@ -11,7 +11,9 @@ function Privacy() {
       <h2>Your location</h2>
       <p>
         If you click "use my location", your browser asks for permission first. Your coordinates are only used to
-        search for nearby events. They're sent to Ticketmaster for that search and aren't stored anywhere.
+        search for nearby events. In the cities Concert Radar preloads each day, that search goes to Concert Radar's
+        own server, which looks the shows up in its events database. Anywhere else, it goes straight to Ticketmaster.
+        Either way, your location isn't saved. The database only holds event listings, nothing about you.
       </p>
       <p>
         When you search for a place, a rough version of the area you're currently viewing (rounded to about 10km) is
@@ -41,7 +43,7 @@ function Privacy() {
       </p>
       <ul>
         <li>
-          <a href="https://privacy.ticketmaster.com/" target="_blank" rel="noreferrer">Ticketmaster</a> (event search)
+          <a href="https://privacy.ticketmaster.com/" target="_blank" rel="noreferrer">Ticketmaster</a> (event listings)
         </li>
         <li>
           <a href="https://www.spotify.com/legal/privacy-policy/" target="_blank" rel="noreferrer">Spotify</a> (artist
@@ -59,6 +61,10 @@ function Privacy() {
         </li>
         <li>
           <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noreferrer">Vercel</a> (hosting)
+        </li>
+        <li>
+          <a href="https://neon.com/privacy-policy" target="_blank" rel="noreferrer">Neon</a> (events database, holds
+          event listings only)
         </li>
       </ul>
 

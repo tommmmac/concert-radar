@@ -10,6 +10,7 @@ npm run build    # tsc -b type-check, then vite build
 npm run lint      # oxlint
 npm test          # vitest run (one-shot; use `npx vitest` for watch mode)
 npm run test:live # live checks against the real APIs (uses .env keys)
+npm run ingest    # run the daily events ingest locally (needs DATABASE_URL in .env)
 npm run preview   # preview a production build locally
 ```
 
@@ -60,6 +61,10 @@ together. Both read env vars from the same `.env` file (Vite and
 - `SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET` — server-only, no `VITE_`
   prefix (see Architecture below for why that distinction matters here).
   Free app at developer.spotify.com/dashboard.
+- `DATABASE_URL` — server-only Neon Postgres connection string, for
+  `api/events.ts` and `npm run ingest`. Set on Vercel by the Neon
+  integration and as a GitHub secret for the ingest workflow; paste it
+  into `.env` by hand (`vercel env pull .env` would overwrite the file).
 - `VITE_LASTFM_API_KEY` — client-side safe (read-only, no secret involved),
   unlike the Spotify credentials above. Free key at
   last.fm/api/account/create.
@@ -90,11 +95,24 @@ directly — it switches between the live Ticketmaster call and
 `mockEvents.ts` fixtures based on `VITE_USE_MOCK_DATA`. Always go
 through it so mock mode keeps working.
 
-**Data fetching is entirely client-side** — `lib/concerts/ticketmaster.ts` calls
-the Ticketmaster Discovery API directly from the browser with the API
-key in a Vite env var (no backend proxy yet). A scheduled-ingestion /
-database layer is on the roadmap (see README) for when this needs to
-scale beyond a single-key, single-request-per-load model.
+**Events come from a database for preloaded cities, live elsewhere.**
+A daily GitHub Actions job (`.github/workflows/ingest.yml` →
+`scripts/ingest.ts`) loads every city in `lib/concerts/cities.ts` (50km
+around each) from Ticketmaster into Neon Postgres (`api/_db.ts`, table
+created on first run), paging past the 200-result cap and splitting date
+ranges to stay under Ticketmaster's 1,000-result deep-paging limit.
+`api/events.ts` serves it by distance. In `lib/concerts/events.ts`, each
+search circle goes to `/api/events` only if `isCovered()`
+(`lib/concerts/coverage.ts`) says the circle fits *inside* a preloaded
+city's area — otherwise, or if `/api/events` fails (plain `npm run dev`
+has no `/api`), `lib/concerts/ticketmaster.ts` searches live from the
+browser as before, so its key is still a `VITE_` var for now. Response
+parsing lives in `lib/concerts/discovery.ts`, which has no imports and
+no `import.meta.env` so the Node script can load it (same for
+`cities.ts`). Adding a city: append it to `CITIES`, then "Run workflow"
+on the ingest action. The daily live check
+(`storedEvents.live.test.ts`) fails if the data is over 36h old — the
+site would silently fall back to live searches otherwise.
 
 **Venue grouping** (`lib/concerts/venues.ts`): multiple events at the same venue
 are merged into one `VenueGroup` (keyed by coordinates rounded to 4
