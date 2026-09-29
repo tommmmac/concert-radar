@@ -21,7 +21,7 @@ describe('fetchArtistInfo', () => {
 
     await fetchArtistInfo('Florence + the Machine')
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/spotify-artist?name=Florence%20%2B%20the%20Machine')
+    expect(fetchMock).toHaveBeenCalledWith('/api/spotify-artist?name=Florence%20%2B%20the%20Machine&v=2')
   })
 
   it('returns the artist from the function', async () => {
