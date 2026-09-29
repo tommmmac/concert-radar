@@ -1,0 +1,37 @@
+.genre-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.genre-filter-chip {
+  padding: 6px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.genre-filter-chip:hover {
+  border-color: var(--color-accent);
+}
+
+.genre-filter-chip[aria-pressed='true'] {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-text);
+}
+
+.genre-filter-count {
+  margin-left: 2px;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
+.genre-filter-chip[aria-pressed='true'] .genre-filter-count {
+  color: inherit;
+}

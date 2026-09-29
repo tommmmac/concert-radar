@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import type { ConcertEvent } from '../lib/concerts/ticketmaster'
 import { distanceKm, type GeocodedLocation } from '../lib/geocode'
@@ -19,6 +19,10 @@ interface NewsFeedProps {
   isFirstVisit: boolean
   widenedToKm: number | null
   location: GeocodedLocation
+  /** The genre filter, shown between the banner and the cards. */
+  filter?: ReactNode
+  /** A genre filter is narrowing `events`, so an empty list means "none in those genres". */
+  isFiltered?: boolean
 }
 
 function NewsFeed({
@@ -30,6 +34,8 @@ function NewsFeed({
   isFirstVisit,
   widenedToKm,
   location,
+  filter,
+  isFiltered = false,
 }: NewsFeedProps) {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
 
@@ -106,9 +112,15 @@ function NewsFeed({
         </div>
       </header>
 
+      {ready && filter}
+
       {ready &&
         (events.length === 0 ? (
-          <p className="news-feed-empty">No upcoming shows found near {location.label}.</p>
+          <p className="news-feed-empty">
+            {isFiltered
+              ? `No upcoming shows in those genres near ${location.label}.`
+              : `No upcoming shows found near ${location.label}.`}
+          </p>
         ) : (
           <>
             <div className="news-feed-items">

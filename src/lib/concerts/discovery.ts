@@ -17,6 +17,10 @@ export interface ConcertEvent {
    * already listed when their city started being tracked.
    */
   announcedAt?: string | null
+  /** Ticketmaster's top-level genre ("Rock", "Hip-Hop/Rap"), for the genre filter. */
+  genre?: string | null
+  /** The headline act as Ticketmaster lists it, a better lookup name than the event title. */
+  artistName?: string | null
 }
 
 interface DiscoveryVenue {
@@ -34,8 +38,10 @@ export interface DiscoveryResponse {
       name: string
       url: string
       dates?: { start?: { localDate?: string } }
+      classifications?: Array<{ genre?: { name?: string } }>
       _embedded?: {
         venues?: DiscoveryVenue[]
+        attractions?: Array<{ name?: string }>
       }
     }>
   }
@@ -60,7 +66,7 @@ export function discoveryParams(apiKey: string, lat: number, lng: number, radius
 /** Maps a response to the fields the app uses, dropping events with no venue coordinates (they can't go on the map). */
 export function parseDiscoveryEvents(data: DiscoveryResponse): ConcertEvent[] {
   return (data._embedded?.events ?? [])
-    .map((event) => {
+    .map((event): ConcertEvent | null => {
       const venue = event._embedded?.venues?.[0]
       if (!venue?.location) return null
 
@@ -72,6 +78,8 @@ export function parseDiscoveryEvents(data: DiscoveryResponse): ConcertEvent[] {
         venueName: venueLabel(venue),
         lat: parseFloat(venue.location.latitude),
         lng: parseFloat(venue.location.longitude),
+        genre: genreName(event.classifications?.[0]?.genre?.name),
+        artistName: event._embedded?.attractions?.[0]?.name?.trim() || null,
       }
     })
     .filter((e): e is ConcertEvent => e !== null)
@@ -80,4 +88,10 @@ export function parseDiscoveryEvents(data: DiscoveryResponse): ConcertEvent[] {
 /** Ticketmaster leaves some venues unnamed (common in Germany and the Netherlands); fall back to where it is. */
 function venueLabel(venue: DiscoveryVenue): string {
   return venue.name?.trim() || venue.address?.line1?.trim() || venue.city?.name?.trim() || 'Venue TBA'
+}
+
+/** Ticketmaster says "Undefined" when it has no genre; treat that as none. */
+function genreName(name: string | undefined): string | null {
+  const trimmed = name?.trim()
+  return trimmed && trimmed !== 'Undefined' ? trimmed : null
 }

@@ -5,7 +5,7 @@ import { fetchArtistDetails } from '../lib/artistInfo/lastfm'
 import { genreHue } from '../lib/artistInfo/genreColor'
 import { formatEventDate } from '../lib/formatDate'
 import { isJustAnnounced } from '../lib/concerts/announced'
-import { cleanArtistName } from '../lib/artistInfo/artistName'
+import { lookupArtistName } from '../lib/artistInfo/artistName'
 import type { ConcertEvent } from '../lib/concerts/ticketmaster'
 import SpotifyArtistImage from './SpotifyArtistImage'
 import './NewsCard.css'
@@ -16,8 +16,8 @@ interface NewsCardProps {
 }
 
 function NewsCard({ event, isNew }: NewsCardProps) {
-  // Display the full Ticketmaster title, but look the artist up by the cleaned name.
-  const artistName = cleanArtistName(event.name)
+  // Display the full Ticketmaster title, but look the artist up by name.
+  const artistName = lookupArtistName(event)
   const { data: artist, loading: artistLoading } = useLookup(artistName, fetchArtistInfo)
   const { data: details, loading: detailsLoading } = useLookup(artistName, fetchArtistDetails)
 

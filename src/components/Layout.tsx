@@ -22,6 +22,9 @@ export interface AppContext {
   /** Set when there were too few shows nearby and the search radius was widened. */
   widenedToKm: number | null
   location: GeocodedLocation
+  /** Genres picked in the filter (empty = all). Kept here so News and Map share it. */
+  selectedGenres: string[]
+  setSelectedGenres: (genres: string[]) => void
 }
 
 function Layout() {
@@ -34,6 +37,7 @@ function Layout() {
   const [newEventIds, setNewEventIds] = useState<Set<string>>(new Set())
   const [isFirstVisit, setIsFirstVisit] = useState(false)
   const [widenedToKm, setWidenedToKm] = useState<number | null>(null)
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([])
 
   useEffect(() => {
     setLoading(true)
@@ -42,6 +46,8 @@ function Layout() {
       .then((fetched) => {
         setEvents(fetched.events)
         setWidenedToKm(fetched.widenedToKm)
+        // A new place has its own mix of genres; start unfiltered.
+        setSelectedGenres([])
         const seen = findNewEventIds(location, fetched.events.map((event) => event.id))
         setNewEventIds(seen.newIds)
         setIsFirstVisit(seen.isFirstVisit)
@@ -61,6 +67,8 @@ function Layout() {
     isFirstVisit,
     widenedToKm,
     location,
+    selectedGenres,
+    setSelectedGenres,
   }
 
   return (
