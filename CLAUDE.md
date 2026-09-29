@@ -34,18 +34,18 @@ push to `main`, plus a gitleaks scan of the full git history for
 committed secrets.
 
 **Live API checks** (`*.live.test.ts`, colocated like other tests) call
-the real Ticketmaster, Last.fm and Nominatim APIs plus production's
-`/api/spotify-artist`, through the app's own client code, and assert
+the real Last.fm and Nominatim APIs plus production's
+`/api/spotify-artist`, `/api/ticketmaster-search` and `/api/events`, and assert
 only the fields the app relies on. They're excluded from `npm test`
 (`vite.config.ts`) and run via `vitest.live.config.ts` — daily at 6am
 Melbourne by `.github/workflows/api-health.yml` (also a manual "Run
-workflow" button), with keys from the `TICKETMASTER_API_KEY` /
-`LASTFM_API_KEY` repo secrets. A failed run emails whoever last edited
-the workflow's cron line. If an upstream API changes, extend the relevant
+workflow" button), with the Last.fm key from the `LASTFM_API_KEY` repo
+secret (the Ticketmaster checks go through production, so need no key).
+A failed run emails whoever last edited the workflow's cron line. If an upstream API changes, extend the relevant
 live check alongside the fix.
 
-Plain `npm run dev` does not serve `/api` routes. To exercise the Spotify
-function locally, use `npx vercel dev` instead (requires `npx vercel
+Plain `npm run dev` does not serve `/api` routes. To exercise the `/api`
+functions (live events, Spotify) locally, use `npx vercel dev` instead (requires `npx vercel
 login` once) — it serves the Vite frontend and the Vercel functions
 together. Both read env vars from the same `.env` file (Vite and
 `vercel dev` disagree on `.env.local`, so this project uses plain
@@ -53,7 +53,12 @@ together. Both read env vars from the same `.env` file (Vite and
 
 ### Env vars (`.env`, see `.env.example`)
 
-- `VITE_TICKETMASTER_API_KEY` — required for live data (free at developer.ticketmaster.com)
+- `TICKETMASTER_API_KEY` — server-only, for `api/ticketmaster-search.ts`
+  and `npm run ingest` (free at developer.ticketmaster.com). Deliberately
+  not a `VITE_` var: those are bundled into the public JavaScript, where
+  anyone can copy the key and use up its 5,000/day quota. Production
+  (Vercel) and the ingest (GitHub secret) use separate keys (separate
+  Ticketmaster "apps"), so one being used up can't take down the other.
 - `VITE_USE_MOCK_DATA` — set `true` to develop against fixture data in
   `src/lib/concerts/mockEvents.ts` instead of hitting the live API (useful for UI
   work without burning Ticketmaster's rate limit). Vite only reads env
@@ -104,9 +109,10 @@ ranges to stay under Ticketmaster's 1,000-result deep-paging limit.
 `api/events.ts` serves it by distance. In `lib/concerts/events.ts`, each
 search circle goes to `/api/events` only if `isCovered()`
 (`lib/concerts/coverage.ts`) says the circle fits *inside* a preloaded
-city's area — otherwise, or if `/api/events` fails (plain `npm run dev`
-has no `/api`), `lib/concerts/ticketmaster.ts` searches live from the
-browser as before, so its key is still a `VITE_` var for now. Response
+city's area — otherwise, or if `/api/events` fails,
+`lib/concerts/ticketmaster.ts` searches live through
+`/api/ticketmaster-search` (edge-cached for an hour). Plain `npm run dev`
+serves neither, so use mock mode or `npx vercel dev` there. Response
 parsing lives in `lib/concerts/discovery.ts`, which has no imports and
 no `import.meta.env` so the Node script can load it (same for
 `cities.ts`). Adding a city: append it to `CITIES`, then "Run workflow"
@@ -173,10 +179,10 @@ of the logo record in a pink pin, so no image assets are involved. Pass
 longer patched for Vite (the old `leafletIconFix.ts` was removed), so a
 marker without an explicit icon would render as a broken image.
 
-**`api/spotify-artist.ts` is the one server-side piece of this app.**
-Everything else fetches directly from the browser, but Spotify's Client
-Credentials flow requires a client secret that must never reach the
-client bundle (unlike Ticketmaster's key, which is safe client-side).
+**`api/spotify-artist.ts` keeps the Spotify secret server-side.**
+Spotify's Client Credentials flow requires a client secret that must
+never reach the client bundle (the Ticketmaster key moved server-side
+for a related reason — see Env vars).
 This Vercel serverless function (with shared token logic in
 `api/_spotifyAuth.ts` — the `_` prefix tells Vercel it's not a route)
 holds `SPOTIFY_CLIENT_ID`/`_SECRET`, exchanges them for an access token

@@ -6,11 +6,12 @@ import { CITIES } from '../src/lib/concerts/cities.js'
 import { deleteStaleEvents, ensureSchema, findIngestedCities, markCityIngested, upsertEvents } from '../api/_db.js'
 import { fetchCityEvents } from './fetchCityEvents.js'
 
-// CI passes the repo secret as TICKETMASTER_API_KEY; locally, .env only
-// has the browser's VITE_ name, so accept either.
-const apiKey = process.env.TICKETMASTER_API_KEY ?? process.env.VITE_TICKETMASTER_API_KEY
+// Server-only, like the live search's key (api/ticketmaster-search.ts). CI
+// uses its own key (the TICKETMASTER_API_KEY repo secret), so a busy day
+// of live searches can't use up the ingest's quota.
+const apiKey = process.env.TICKETMASTER_API_KEY
 if (!apiKey || apiKey === 'your_key_here') {
-  console.error('Set TICKETMASTER_API_KEY (or VITE_TICKETMASTER_API_KEY)')
+  console.error('Set TICKETMASTER_API_KEY')
   process.exit(1)
 }
 if (!process.env.DATABASE_URL) {

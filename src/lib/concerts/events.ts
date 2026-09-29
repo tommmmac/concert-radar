@@ -21,9 +21,9 @@ export interface NearbyConcerts {
 
 /**
  * One search circle. Inside a preloaded city it's answered from the
- * database (/api/events); anywhere else — or if /api/events can't answer,
- * e.g. under plain `npm run dev`, which doesn't serve /api — Ticketmaster
- * is searched live, as before.
+ * database (/api/events); anywhere else, or if /api/events can't answer,
+ * Ticketmaster is searched live (/api/ticketmaster-search). Both are /api
+ * routes, so plain `npm run dev` needs mock mode or `npx vercel dev`.
  */
 async function fetchAt(lat: number, lng: number, radiusKm = RADII_KM[0]): Promise<ConcertEvent[]> {
   if (isCovered(lat, lng, radiusKm)) {

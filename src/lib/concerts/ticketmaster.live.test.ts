@@ -1,24 +1,31 @@
-// Live check (npm run test:live): the real Discovery API still returns what
-// fetchNearbyConcerts needs. Melbourne always has well over 20 shows listed.
+// Live check (npm run test:live): the deployed site's live search works end
+// to end — Vercel is up, its TICKETMASTER_API_KEY is set, and the real
+// Discovery API still returns what the app needs. Melbourne always has well
+// over 20 shows listed. No Ticketmaster key is needed here.
 import { beforeAll, describe, expect, it } from 'vitest'
 import { distanceKm } from '../geocode'
-import { fetchNearbyConcerts, type ConcertEvent } from './ticketmaster'
+import type { ConcertEvent } from './ticketmaster'
 
+const SITE = 'https://concert-radar.com'
 const MELBOURNE = { lat: -37.8136, lng: 144.9631 }
 
-describe('Ticketmaster Discovery API (live)', () => {
+describe('Production /api/ticketmaster-search (live)', () => {
   let events: ConcertEvent[]
 
   beforeAll(async () => {
-    if (!import.meta.env.VITE_TICKETMASTER_API_KEY) {
-      throw new Error('VITE_TICKETMASTER_API_KEY is not set (GitHub secret TICKETMASTER_API_KEY)')
-    }
-    events = await fetchNearbyConcerts(MELBOURNE.lat, MELBOURNE.lng)
+    // The response is edge-cached for an hour; a per-day extra param
+    // (ignored by the function) makes each daily run a fresh search.
+    const check = new Date().toISOString().slice(0, 10)
+    const res = await fetch(
+      `${SITE}/api/ticketmaster-search?lat=${MELBOURNE.lat}&lng=${MELBOURNE.lng}&radius=25&check=${check}`,
+    )
+    if (!res.ok) throw new Error(`/api/ticketmaster-search: ${res.status} ${await res.text()}`)
+    events = ((await res.json()) as { events: ConcertEvent[] }).events
   })
 
   it('finds plenty of Melbourne shows with venue coordinates', () => {
-    // fetchNearbyConcerts drops events without venue coordinates, so a
-    // renamed location field would show up here as a near-empty list.
+    // Events without venue coordinates are dropped, so a renamed location
+    // field would show up here as a near-empty list.
     expect(events.length).toBeGreaterThanOrEqual(20)
   })
 
