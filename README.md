@@ -92,7 +92,7 @@ domains before the first request fires.
 - [x] Scheduled ingestion: a daily job loads ~36 cities' events into
       Postgres (Neon), served by `/api/events`, so searches there no
       longer hit Ticketmaster per visitor
-- [ ] Move the live-search fallback (places outside the preloaded
+- [x] Move the live-search fallback (places outside the preloaded
       cities) behind a serverless function too, so the Ticketmaster key
       stops being embedded in the browser bundle
 - [ ] Store artist info (Spotify image, Last.fm genres/bio) during

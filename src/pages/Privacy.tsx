@@ -5,14 +5,16 @@ function Privacy() {
     <article className="info-page">
       <h1>Privacy</h1>
       <p className="info-page-lede">
-        Concert Radar has no accounts, no analytics and no database. Here's everything it does with your data.
+        Concert Radar has no accounts, no analytics, and nothing about you in its database. Here's everything it does
+        with your data.
       </p>
 
       <h2>Your location</h2>
       <p>
         If you click "use my location", your browser asks for permission first. Your coordinates are only used to
         search for nearby events. In the cities Concert Radar preloads each day, that search goes to Concert Radar's
-        own server, which looks the shows up in its events database. Anywhere else, it goes straight to Ticketmaster.
+        own server, which looks the shows up in its events database. Anywhere else, Concert Radar's server asks
+        Ticketmaster on your behalf.
         Either way, your location isn't saved. The database only holds event listings, nothing about you.
       </p>
       <p>
