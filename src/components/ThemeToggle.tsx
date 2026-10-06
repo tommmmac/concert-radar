@@ -38,15 +38,11 @@ function ThemeToggle() {
       className="theme-toggle"
       onClick={toggle}
     >
-      <span className="theme-toggle-icon" aria-hidden="true">
-        ☀️
-      </span>
+      <span aria-hidden="true">Light</span>
       <span className={isDark ? 'theme-toggle-track theme-toggle-track--on' : 'theme-toggle-track'}>
         <span className="theme-toggle-thumb" />
       </span>
-      <span className="theme-toggle-icon" aria-hidden="true">
-        🌙
-      </span>
+      <span aria-hidden="true">Dark</span>
     </button>
   )
 }

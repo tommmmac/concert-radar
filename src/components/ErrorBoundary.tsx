@@ -26,12 +26,10 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
     if (this.state.hasError) {
       return (
         <div className="error-fallback">
-          <span className="error-fallback-mark" aria-hidden="true">
-            📡
-          </span>
+          <img className="error-fallback-mark" src="/favicon.svg" alt="" aria-hidden="true" />
           <h1>Something went wrong</h1>
           <p>The app hit an unexpected error. Reloading usually fixes it.</p>
-          <button className="error-fallback-button" onClick={() => window.location.reload()}>
+          <button className="btn btn--solid" onClick={() => window.location.reload()}>
             Reload
           </button>
         </div>

@@ -1,15 +1,14 @@
+/* Paper, not a dark bar: the header sits on the page colour and is closed
+   off by a heavy ink rule, like the top edge of a gig guide. */
 .app-header {
   display: flex;
   align-items: center;
   gap: 16px 40px;
   flex-wrap: wrap;
-  padding: 16px 24px;
-  background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-end));
-  color: var(--color-text-inverse);
-  box-shadow: var(--shadow-md);
-  /* Barely visible in light mode; in dark mode it's what separates the
-     header from the near-black page. */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 14px 24px;
+  background: var(--color-page);
+  color: var(--color-text);
+  border-bottom: 3px solid var(--color-ink);
 }
 
 .header-brand {
@@ -21,22 +20,23 @@
 }
 
 .brand-mark {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   flex-shrink: 0;
 }
 
 .brand {
   margin: 0;
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
+  font-size: 26px;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .tagline {
-  margin: 2px 0 0;
-  font-size: 13px;
-  color: #8fd3de;
+  margin: 3px 0 0;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-muted);
 }
 
 .header-nav {
@@ -45,29 +45,21 @@
 }
 
 .nav-link {
-  position: relative;
   padding: 4px 0;
-  color: rgba(238, 244, 246, 0.7);
+  border-bottom: 2px solid transparent;
+  color: var(--color-text-muted);
   text-decoration: none;
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .nav-link:hover {
-  color: white;
+  color: var(--color-text);
 }
 
 .nav-link.active {
-  color: var(--color-accent);
-}
-
-.nav-link.active::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -2px;
-  height: 2px;
-  border-radius: 1px;
-  background: var(--color-accent);
+  color: var(--color-text);
+  border-bottom-color: var(--color-accent);
 }

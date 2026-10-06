@@ -67,10 +67,7 @@ function NewsFeed({
     <div className="news-feed">
       <header className="news-banner">
         <div className="news-banner-text">
-          <p className="news-banner-eyebrow">
-            <span className="pulse-dot" aria-hidden="true" />
-            News feed
-          </p>
+          <p className="news-banner-eyebrow mono">News feed</p>
           <h1>
             What's on {location.city ? 'near' : 'in'} {location.label}
           </h1>
@@ -106,7 +103,7 @@ function NewsFeed({
               ))}
             </dl>
           )}
-          <Link to="/map" className="news-banner-link">
+          <Link to="/map" className="btn btn--small">
             View on map →
           </Link>
         </div>
@@ -129,7 +126,7 @@ function NewsFeed({
               ))}
             </div>
             {visibleCount < sortedEvents.length && (
-              <button className="news-feed-more" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>
+              <button className="btn news-feed-more" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>
                 Show more ({sortedEvents.length - visibleCount} left)
               </button>
             )}
