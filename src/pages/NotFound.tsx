@@ -4,12 +4,10 @@ import './NotFound.css'
 function NotFound() {
   return (
     <div className="not-found">
-      <span className="not-found-mark" aria-hidden="true">
-        📡
-      </span>
+      <img className="not-found-mark" src="/favicon.svg" alt="" aria-hidden="true" />
       <h1>Nothing on the radar here</h1>
       <p>That page doesn't exist — it might've moved, or the link's just wrong.</p>
-      <Link className="not-found-link" to="/">
+      <Link className="btn btn--solid" to="/">
         Back to home
       </Link>
     </div>

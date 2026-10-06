@@ -1,26 +1,24 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
     <radialGradient id="disc" cx="35%" cy="35%" r="75%">
-      <stop offset="0%" stop-color="#1a0a1f"/>
-      <stop offset="100%" stop-color="#05050a"/>
+      <stop offset="0%" stop-color="#2a2622"/>
+      <stop offset="100%" stop-color="#0d0c0b"/>
     </radialGradient>
   </defs>
 
   <!-- vinyl disc -->
   <circle cx="32" cy="32" r="30" fill="url(#disc)"/>
-  <circle cx="32" cy="32" r="29.25" fill="none" stroke="#22d3ee" stroke-opacity="0.3" stroke-width="1.5"/>
 
   <!-- grooves, doubling as radar rings -->
-  <circle cx="32" cy="32" r="23" fill="none" stroke="#22d3ee" stroke-opacity="0.22" stroke-width="1.4"/>
-  <circle cx="32" cy="32" r="16" fill="none" stroke="#22d3ee" stroke-opacity="0.22" stroke-width="1.4"/>
+  <circle cx="32" cy="32" r="23" fill="none" stroke="#efe8da" stroke-opacity="0.18" stroke-width="1.4"/>
+  <circle cx="32" cy="32" r="16" fill="none" stroke="#efe8da" stroke-opacity="0.18" stroke-width="1.4"/>
 
   <!-- radar sweep to a detected blip -->
-  <line x1="32" y1="32" x2="48.3" y2="15.7" stroke="#ff2ea6" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
-  <circle cx="48.3" cy="15.7" r="6.5" fill="#ff2ea6" opacity="0.25"/>
-  <circle cx="48.3" cy="15.7" r="3" fill="#ff2ea6"/>
+  <line x1="32" y1="32" x2="48.3" y2="15.7" stroke="#e9b13a" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="48.3" cy="15.7" r="6.5" fill="#e9b13a" opacity="0.25"/>
+  <circle cx="48.3" cy="15.7" r="3" fill="#e9b13a"/>
 
   <!-- record label -->
-  <circle cx="32" cy="32" r="9" fill="#0d1f21"/>
-  <circle cx="32" cy="32" r="9" fill="none" stroke="#22d3ee" stroke-width="1.2"/>
-  <circle cx="32" cy="32" r="2.4" fill="#22d3ee"/>
+  <circle cx="32" cy="32" r="9.5" fill="#d8432a"/>
+  <circle cx="32" cy="32" r="2.2" fill="#efe8da"/>
 </svg>

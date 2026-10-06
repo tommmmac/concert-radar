@@ -1,50 +1,52 @@
+/* Record-shop palette: cream sleeve card, black vinyl ink, a red record
+   label as the one loud colour, and a mustard "price sticker" for
+   highlights. Flat on purpose: hairline rules and borders, no gradients or
+   soft shadows. Light values here, dark overrides below. */
 :root {
-  --color-bg-start: #0a0a0f;
-  --color-bg-end: #1a0a1f;
-  --color-surface: #ffffff;
-  --color-accent: #ff2ea6;
-  --color-accent-strong: #d6208a;
-  --color-live: #22d3ee;
-  --color-text: #1e1b2e;
-  --color-text-inverse: #eef4f6;
-  --color-text-muted: #6b7280;
-  --color-border: #e5e7eb;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --shadow-md: 0 4px 16px rgba(5, 5, 10, 0.22);
-  --shadow-lg: 0 12px 32px rgba(5, 5, 10, 0.32);
+  --color-page: #efe8da; /* sleeve card */
+  --color-surface: #f8f4ec;
+  --color-ink: #1b1814; /* vinyl black: strong rules, solid buttons */
+  --color-on-ink: #f8f4ec; /* text on --color-ink and --color-accent */
+  --color-text: #1b1814;
+  --color-text-muted: #6d6458;
+  --color-border: #d6ccba; /* hairline between items */
+  --color-accent: #d8432a; /* record label red */
+  --color-accent-strong: #b5341e;
+  --color-accent-text: #b5341e; /* accent as text colour on surfaces */
+  --color-accent-soft: #f4dbd1;
+  --color-accent-tint: #f6e9df; /* behind "new" news cards */
+  --color-accent-tint-border: #e3b2a2;
+  --color-sticker: #e9b13a; /* mustard price sticker */
+  --color-on-sticker: #1b1814;
+  --color-skeleton: #e3dacb;
+  --color-skeleton-shine: #ece5d8;
+  --radius-sm: 2px;
 
-  /* Themed tokens — light values here, dark overrides below. The header,
-     footer and gradient banners use the --color-bg-* tokens above and stay
-     dark in both themes. */
-  --color-page: #f4f4f8;
-  --color-accent-text: #d6208a; /* accent as text colour on surfaces */
-  --color-accent-soft: #fdeef6; /* pink tint behind artist cards, counts */
-  --color-accent-tint: #fff7fb; /* fainter tint for "new" news cards */
-  --color-accent-tint-border: #f9c2df;
-  --color-skeleton: #efeff4;
-  --color-skeleton-shine: #f7f7fa;
+  --font-body: 'Archivo', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, monospace;
 
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--font-body);
   color-scheme: light;
 }
 
 /* Set on <html> by the inline script in index.html (before first paint) and
-   by ThemeToggle. Midnight palette: near-black surfaces, same neon accents. */
+   by ThemeToggle. A dim listening room: same palette, lights down. */
 :root[data-theme='dark'] {
-  --color-page: #0d0c14;
-  --color-surface: #17151f;
-  --color-text: #ece9f5;
-  --color-text-muted: #9a97aa;
-  --color-border: #2a2735;
-  --color-accent-text: #ff6cbf;
-  --color-accent-soft: rgba(255, 46, 166, 0.14);
-  --color-accent-tint: rgba(255, 46, 166, 0.07);
-  --color-accent-tint-border: rgba(255, 46, 166, 0.35);
-  --color-skeleton: #221f2c;
-  --color-skeleton-shine: #2d2a39;
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --color-page: #171410;
+  --color-surface: #211d18;
+  --color-ink: #ede4d3; /* rules and solid buttons flip to cream */
+  --color-on-ink: #171410;
+  --color-text: #ede4d3;
+  --color-text-muted: #a69b89;
+  --color-border: #3a332b;
+  --color-accent: #e5553b;
+  --color-accent-strong: #f06a50;
+  --color-accent-text: #f27a62;
+  --color-accent-soft: rgba(229, 85, 59, 0.16);
+  --color-accent-tint: rgba(229, 85, 59, 0.07);
+  --color-accent-tint-border: rgba(229, 85, 59, 0.4);
+  --color-skeleton: #2a251f;
+  --color-skeleton-shine: #342e27;
 
   color-scheme: dark;
 }
@@ -61,37 +63,105 @@ body {
   margin: 0;
   background: var(--color-page); /* also covers overscroll/bounce areas */
   color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
 }
 
+/* Display type: Archivo's width axis squeezed down, like the spine of a
+   record sleeve. */
 h1, h2, h3, .brand {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-family: var(--font-body);
+  font-stretch: 75%;
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
-/* Small "live" indicator, shared by the landing hero and the news banner. */
-.pulse-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--color-live);
-  animation: pulse 1.4s ease-in-out infinite;
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Small print: dates, counts, catalogue numbers. */
+.mono {
+  font-family: var(--font-mono);
+}
+
+/* Buttons and button-like links, shared across pages. Square, ink-on-paper. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 20px;
+  border: 1.5px solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.btn:hover {
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+}
+
+.btn--solid {
+  background: var(--color-ink);
+  color: var(--color-on-ink);
+}
+
+.btn--solid:hover {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  color: var(--color-on-ink);
+}
+
+.btn--small {
+  padding: 5px 10px;
+  border-width: 1px;
+  font-size: 11px;
+}
+
+/* Stickers: "New" (personal) and "Just announced" (shared) badges. */
+.sticker {
+  flex-shrink: 0;
+  padding: 2px 7px;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent);
+  color: var(--color-on-ink);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sticker--announced {
+  background: var(--color-sticker);
+  color: var(--color-on-sticker);
 }
 
 /* Genre pills: the hue is per-genre (--genre-hue, set inline from
    lib/artistInfo/genreColor.ts), the lightness per theme — so a genre keeps its colour
-   identity in both themes. */
+   identity in both themes. Muted, like faded print. */
 .genre-pill {
-  padding: 2px 10px;
-  border-radius: 999px;
-  background: hsl(var(--genre-hue) 70% 92%);
-  color: hsl(var(--genre-hue) 55% 32%);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  background: hsl(var(--genre-hue) 35% 87%);
+  color: hsl(var(--genre-hue) 45% 27%);
   font-size: 11px;
   font-weight: 600;
   text-transform: capitalize;
 }
 
 :root[data-theme='dark'] .genre-pill {
-  background: hsl(var(--genre-hue) 45% 20%);
-  color: hsl(var(--genre-hue) 85% 80%);
+  background: hsl(var(--genre-hue) 22% 21%);
+  color: hsl(var(--genre-hue) 50% 78%);
 }
 
 /* Loading placeholder shimmer, shared by artist and news cards. */
@@ -112,17 +182,6 @@ h1, h2, h3, .brand {
   }
   100% {
     background-position: 0 50%;
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(0.75);
   }
 }
 

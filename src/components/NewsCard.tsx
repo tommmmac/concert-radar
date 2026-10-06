@@ -33,25 +33,23 @@ function NewsCard({ event, isNew }: NewsCardProps) {
           className="news-card-image"
         />
       ) : (
-        <div className="news-card-image news-card-image--placeholder" aria-hidden="true">
-          🎵
-        </div>
+        // No photo: a blank sleeve with the record peeking out (pure CSS).
+        <div className="news-card-image news-card-image--placeholder" aria-hidden="true" />
       )}
 
       <div className="news-card-body">
+        <p className="news-card-date mono">{formatEventDate(event.date)}</p>
         <div className="news-card-heading">
           {/* "New" is personal (since your last visit), so it wins over the
               shared "Just announced" when both apply. */}
           {isNew ? (
-            <span className="news-card-badge">New</span>
+            <span className="sticker">New</span>
           ) : (
-            isJustAnnounced(event) && <span className="news-card-badge news-card-badge--announced">Just announced</span>
+            isJustAnnounced(event) && <span className="sticker sticker--announced">Just announced</span>
           )}
           <h3>{event.name}</h3>
         </div>
-        <p className="news-card-meta">
-          {event.venueName} · {formatEventDate(event.date)}
-        </p>
+        <p className="news-card-meta">{event.venueName}</p>
 
         {details && details.tags.length > 0 && (
           <div className="news-card-genres">
@@ -96,7 +94,7 @@ function NewsCard({ event, isNew }: NewsCardProps) {
               </>
             )}
           </span>
-          <a className="news-card-tickets" href={event.url} target="_blank" rel="noreferrer">
+          <a className="btn btn--small btn--solid" href={event.url} target="_blank" rel="noreferrer">
             Tickets →
           </a>
         </div>

@@ -75,7 +75,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
           {artist.events.map((event) => (
             <li key={event.id}>
               <span>{formatEventDate(event.date)}</span>
-              <a href={event.url} target="_blank" rel="noreferrer">
+              <a className="btn btn--small" href={event.url} target="_blank" rel="noreferrer">
                 Tickets
               </a>
             </li>

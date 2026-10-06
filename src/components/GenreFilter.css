@@ -1,14 +1,14 @@
 .genre-filter {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .genre-filter-chip {
-  padding: 6px 14px;
-  border: 1px solid var(--color-border);
-  border-radius: 999px;
-  background: var(--color-surface);
+  padding: 5px 11px;
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-sm);
+  background: transparent;
   color: var(--color-text);
   font-family: inherit;
   font-size: 13px;
@@ -17,21 +17,23 @@
 }
 
 .genre-filter-chip:hover {
-  border-color: var(--color-accent);
+  background: var(--color-surface);
 }
 
 .genre-filter-chip[aria-pressed='true'] {
-  border-color: var(--color-accent);
-  background: var(--color-accent-soft);
-  color: var(--color-accent-text);
+  background: var(--color-ink);
+  color: var(--color-on-ink);
 }
 
 .genre-filter-count {
-  margin-left: 2px;
+  margin-left: 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 400;
   color: var(--color-text-muted);
-  font-weight: 500;
 }
 
 .genre-filter-chip[aria-pressed='true'] .genre-filter-count {
   color: inherit;
+  opacity: 0.7;
 }

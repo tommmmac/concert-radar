@@ -174,7 +174,7 @@ deliberately over CartoDB's dark tiles, which now bake an "API key
 required" watermark into free/anonymous tile responses.
 
 **Map pins** use a custom `L.divIcon` (`lib/venueIcon.ts`) — inline SVG
-of the logo record in a pink pin, so no image assets are involved. Pass
+of the logo record in a red pin, so no image assets are involved. Pass
 `icon={venueIcon}` to every `<Marker>`: Leaflet's *default* icon is no
 longer patched for Vite (the old `leafletIconFix.ts` was removed), so a
 marker without an explicit icon would render as a broken image.
@@ -250,14 +250,20 @@ developer terms require artist artwork to link back to Spotify (use
 BY-SA wiki text, so every place a bio is shown links to the artist's
 Last.fm page (`LastFmArtistDetails.url`).
 
-**Styling**: design tokens (colors, radii, shadows) live as CSS custom
-properties on `:root` in `src/index.css`; component-scoped CSS files
-consume them via `var(--color-accent)` etc. Never hard-code a light
-colour in component CSS — use a token, so dark mode keeps working.
+**Styling**: a flat "record shop" look — cream sleeve-card paper, ink
+rules, a red record-label accent and a mustard "sticker" for highlights;
+no gradients or soft shadows. Archivo (variable, condensed via
+`font-stretch` for headings) plus IBM Plex Mono (`.mono`) for dates and
+counts. Design tokens live as CSS custom properties on `:root` in
+`src/index.css`, along with the shared `.btn` / `.sticker` classes;
+component-scoped CSS files consume them via `var(--color-accent)` etc.
+Never hard-code a light colour in component CSS — use a token, so dark
+mode keeps working. (`RadarPing`, the logo and map pins are the
+exception: a black record in both themes, so they use fixed colours.)
 
 **Theming**: light/dark via `data-theme` on `<html>`, with dark overrides
-in `:root[data-theme='dark']` (`index.css`). The header, footer and
-gradient banners use `--color-bg-*` and stay dark in both themes. An
+in `:root[data-theme='dark']` (`index.css`); the header and footer
+follow the theme like everything else. An
 inline script in `index.html` picks the theme before first paint (saved
 choice in `localStorage`, else the device's `prefers-color-scheme`) —
 same rules as `resolveTheme()` in `lib/theme.ts`, so keep the two in

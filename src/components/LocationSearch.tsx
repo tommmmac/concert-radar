@@ -86,7 +86,12 @@ function LocationSearch({ location, onLocationChange }: LocationSearchProps) {
           title="Use my location"
           aria-label="Use my location"
         >
-          📍
+          {/* Crosshair */}
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
+            <circle cx="8" cy="8" r="5" />
+            <circle cx="8" cy="8" r="1.2" fill="currentColor" stroke="none" />
+            <path d="M8 0.5v3M8 12.5v3M0.5 8h3M12.5 8h3" />
+          </svg>
         </button>
       </div>
       {error && (
