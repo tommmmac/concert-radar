@@ -21,7 +21,7 @@ function About() {
           flagged as new.
         </li>
         <li>Search any city, or use your current location.</li>
-        <li>Artist photos, genre tags and short bios on each event.</li>
+        <li>Artist photos, genre tags and short bios, when Spotify and Last.fm have them.</li>
       </ul>
 
       <h2>Where the data comes from</h2>
@@ -51,7 +51,7 @@ function About() {
       <p>
         Built with React, TypeScript and Leaflet. The code is on{' '}
         <a href="https://github.com/tommmmac/concert-radar" target="_blank" rel="noreferrer">GitHub</a> under the MIT
-        licence. See the <Link to="/privacy">privacy page</Link> for how your data is handled.
+        licence. The <Link to="/privacy">privacy page</Link> covers what happens to your data.
       </p>
     </article>
   )

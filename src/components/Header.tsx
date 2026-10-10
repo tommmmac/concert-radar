@@ -15,7 +15,7 @@ function Header({ location, onLocationChange }: HeaderProps) {
         <img className="brand-mark" src="/favicon.svg" alt="" aria-hidden="true" />
         <div>
           <h1 className="brand">Concert Radar</h1>
-          <p className="tagline">Live music happening near you</p>
+          <p className="tagline">Live music near you</p>
         </div>
       </Link>
 

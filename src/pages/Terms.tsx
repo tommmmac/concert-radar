@@ -12,8 +12,8 @@ function Terms() {
       <h2>Show details can be wrong</h2>
       <p>
         Event listings come from Ticketmaster, and artist photos, genres and bios come from Spotify and Last.fm.
-        Concert Radar shows them as they are and doesn't check them. Dates, times, venues and lineups can change or be
-        cancelled. Always check the ticket page before you buy tickets or travel to a show.
+        Concert Radar shows them as they are and doesn't check them. Dates, times, venues and lineups can change, and
+        shows get cancelled. Always check the ticket page before you buy tickets or travel to a show.
       </p>
 
       <h2>Not affiliated</h2>
@@ -48,7 +48,7 @@ function Terms() {
 
       <h2>Changes</h2>
       <p>
-        These terms may be updated from time to time. The date below shows the latest version. Questions go to{' '}
+        These terms may change. The date below shows the latest version. Questions go to{' '}
         <a href="https://github.com/tommmmac/concert-radar/issues" target="_blank" rel="noreferrer">
           GitHub issues
         </a>

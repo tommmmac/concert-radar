@@ -69,8 +69,7 @@ function NewsCard({ event, isNew }: NewsCardProps) {
           // Small/local acts often aren't on Last.fm — say something useful
           // from the listing itself rather than leaving a blank gap.
           <p className="news-card-bio news-card-bio--fallback">
-            Catch {artistName} live at {event.venueName}. No artist bio yet — check the Ticketmaster listing for
-            lineup and set times.
+            No bio for {artistName} yet. Check the Ticketmaster listing for the lineup and set times.
           </p>
         )}
 

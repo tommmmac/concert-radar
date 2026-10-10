@@ -13,12 +13,12 @@ const TRACKS = [
   {
     side: 'A2',
     title: 'Fresh announcements',
-    body: 'The news feed flags shows that have appeared since your last visit, so new gigs never slip past you.',
+    body: 'The news feed flags shows announced since your last visit and puts them at the top.',
   },
   {
     side: 'A3',
     title: 'Know who you’re seeing',
-    body: 'Artist photos, genre tags and short bios on every event, pulled from Spotify and Last.fm.',
+    body: 'Artist photos from Spotify, plus genre tags and short bios from Last.fm, wherever they have them.',
   },
 ]
 
