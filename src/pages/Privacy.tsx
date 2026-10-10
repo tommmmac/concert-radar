@@ -5,7 +5,7 @@ function Privacy() {
     <article className="info-page">
       <h1>Privacy</h1>
       <p className="info-page-lede">
-        Concert Radar has no accounts, no analytics, and nothing about you in its database. Here's everything it does
+        Concert Radar has no accounts, no cookies, and nothing about you in its database. Here's everything it does
         with your data.
       </p>
 
@@ -37,6 +37,15 @@ function Privacy() {
         settings.
       </p>
 
+      <h2>Visit counts</h2>
+      <p>
+        Concert Radar uses Vercel Web Analytics to count visits. It records which page you viewed (just the path, like
+        "/map"), the site that linked you here, and your country, browser, operating system and device type. It doesn't
+        use cookies. Vercel tells visitors apart with a hash of the request that it throws away after 24 hours, so it
+        can't follow you from one day to the next or across other websites. Your searches and location are never sent
+        to it.
+      </p>
+
       <h2>Third-party services</h2>
       <p>
         To show events, maps and artist info, your browser talks to the services below. Like any website, they can see
@@ -63,7 +72,8 @@ function Privacy() {
           <a href="https://www.esri.com/en-us/privacy/overview" target="_blank" rel="noreferrer">Esri</a> (map tiles)
         </li>
         <li>
-          <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noreferrer">Vercel</a> (hosting)
+          <a href="https://vercel.com/legal/privacy-policy" target="_blank" rel="noreferrer">Vercel</a> (hosting and visit
+          counts)
         </li>
         <li>
           <a href="https://neon.com/privacy-policy" target="_blank" rel="noreferrer">Neon</a> (events database, holds
