@@ -12,10 +12,9 @@ function Privacy() {
       <h2>Your location</h2>
       <p>
         If you click "use my location", your browser asks for permission first. Your coordinates are only used to
-        search for nearby events. In the cities Concert Radar preloads each day, that search goes to Concert Radar's
-        own server, which looks the shows up in its events database. Anywhere else, Concert Radar's server asks
-        Ticketmaster on your behalf.
-        Either way, your location isn't saved. The database only holds event listings, nothing about you.
+        search for nearby events. In the cities Concert Radar preloads each day, that search goes to its own server,
+        which looks the shows up in its events database. Anywhere else, the server asks Ticketmaster on your behalf.
+        Either way, your location isn't saved. The database holds event listings and nothing about you.
       </p>
       <p>
         When you search for a place, a rough version of the area you're currently viewing (rounded to about 10km) is
@@ -45,11 +44,13 @@ function Privacy() {
       </p>
       <ul>
         <li>
-          <a href="https://privacy.ticketmaster.com/" target="_blank" rel="noreferrer">Ticketmaster</a> (event listings)
+          <a href="https://privacy.ticketmaster.com/" target="_blank" rel="noreferrer">Ticketmaster</a> (event listings, fetched by
+          Concert Radar's server. Your browser only visits Ticketmaster when you open a ticket link)
         </li>
         <li>
           <a href="https://www.spotify.com/legal/privacy-policy/" target="_blank" rel="noreferrer">Spotify</a> (artist
-          images, looked up through Concert Radar's server, so Spotify only sees the artist name)
+          images. Concert Radar's server finds the artist by name, then your browser loads the photo straight from
+          Spotify)
         </li>
         <li>
           <a href="https://www.last.fm/legal/privacy" target="_blank" rel="noreferrer">Last.fm</a> (genres and bios)
@@ -76,7 +77,7 @@ function Privacy() {
         <a href="https://github.com/tommmmac/concert-radar/issues" target="_blank" rel="noreferrer">GitHub</a>.
       </p>
 
-      <p className="info-page-updated">Last updated September 2026</p>
+      <p className="info-page-updated">Last updated October 2026</p>
     </article>
   )
 }

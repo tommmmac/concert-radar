@@ -23,7 +23,7 @@ function LocationSearch({ location, onLocationChange }: LocationSearchProps) {
       // Bias towards the area already being viewed, so "Cranbourne" means the one near here.
       const result = await geocodeCity(query.trim(), location)
       if (!result) {
-        setError('No matching location found')
+        setError("Couldn't find that place")
       } else {
         onLocationChange(result)
         setQuery('')
@@ -37,7 +37,7 @@ function LocationSearch({ location, onLocationChange }: LocationSearchProps) {
 
   function handleUseMyLocation() {
     if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser')
+      setError("Your browser can't share your location")
       return
     }
 
@@ -53,7 +53,7 @@ function LocationSearch({ location, onLocationChange }: LocationSearchProps) {
         setSearching(false)
       },
       () => {
-        setError('Could not get your location')
+        setError("Couldn't get your location. Check the site's location permission.")
         setSearching(false)
       },
     )

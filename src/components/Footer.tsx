@@ -5,7 +5,7 @@ import './Footer.css'
 function Footer() {
   return (
     <footer className="app-footer">
-      <span>Concert Radar — Built for finding the next show</span>
+      <span>Concert Radar · built for finding the next show</span>
       <nav className="footer-links">
         <Link to="/about">About</Link>
         <Link to="/privacy">Privacy</Link>

@@ -240,6 +240,6 @@ describe('geocodeCity', () => {
 
     // Fails on the first request, before any timer — so no settle(), which
     // would let the rejection go unhandled while timers run.
-    await expect(geocodeCity('Cranbourne')).rejects.toThrow('Location search failed — try again')
+    await expect(geocodeCity('Cranbourne')).rejects.toThrow('Location search failed. Try again.')
   })
 })

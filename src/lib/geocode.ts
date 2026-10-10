@@ -97,7 +97,7 @@ async function searchNominatim(query: string, near?: { lat: number; lng: number 
 
   const res = await fetch(`${NOMINATIM_URL}?${params}`)
   if (!res.ok) {
-    throw new Error('Location search failed — try again')
+    throw new Error('Location search failed. Try again.')
   }
 
   const results: NominatimResult[] = await res.json()

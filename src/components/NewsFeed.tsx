@@ -51,11 +51,11 @@ function NewsFeed({
   // tracking starts now rather than claiming nothing is new.
   const newsSummary = isFirstVisit
     ? announcedCount > 0
-      ? `First look at ${location.label} — ${announcedCount} ${announcedCount === 1 ? 'show' : 'shows'} announced this week, and we'll flag anything new from your next visit.`
-      : `First look at ${location.label} — we'll flag newly announced shows from your next visit.`
+      ? `First look at ${location.label}. ${announcedCount} ${announcedCount === 1 ? 'show was' : 'shows were'} announced in the past week, and from your next visit on we'll flag anything new.`
+      : `First look at ${location.label}. From your next visit on, we'll flag newly announced shows.`
     : newCount > 0
-      ? `${newCount} new ${newCount === 1 ? 'announcement' : 'announcements'} since your last visit — look for the New badge.`
-      : "You're all caught up — no new announcements since your last visit."
+      ? `${newCount} ${newCount === 1 ? 'show' : 'shows'} announced since your last visit, marked New.`
+      : 'Nothing new since your last visit.'
 
   const stats = [
     { label: events.length === 1 ? 'show' : 'shows', value: events.length },

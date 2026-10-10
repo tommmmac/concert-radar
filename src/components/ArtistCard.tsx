@@ -58,7 +58,7 @@ function ArtistCard({ artist }: ArtistCardProps) {
           <p className="artist-card-bio">
             {detailsLoading
               ? 'Loading…'
-              : details?.bio ?? 'No extra info available for this artist yet.'}
+              : details?.bio ?? 'No bio for this artist yet.'}
             {/* Last.fm bios are CC BY-SA wiki text, so credit and link the source. */}
             {details?.bio && details.url && (
               <>
