@@ -1,4 +1,6 @@
 import { Route, Routes } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
+import { stripQuery } from './lib/analytics'
 import Layout from './components/Layout'
 import LandingPage from './pages/LandingPage'
 import NewsPage from './pages/NewsPage'
@@ -10,17 +12,21 @@ import NotFound from './pages/NotFound'
 
 function App() {
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route index element={<LandingPage />} />
-        <Route path="news" element={<NewsPage />} />
-        <Route path="map" element={<MapPage />} />
-        <Route path="about" element={<About />} />
-        <Route path="privacy" element={<Privacy />} />
-        <Route path="terms" element={<Terms />} />
-        <Route path="*" element={<NotFound />} />
-      </Route>
-    </Routes>
+    <>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<LandingPage />} />
+          <Route path="news" element={<NewsPage />} />
+          <Route path="map" element={<MapPage />} />
+          <Route path="about" element={<About />} />
+          <Route path="privacy" element={<Privacy />} />
+          <Route path="terms" element={<Terms />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+      {/* Page views only: custom events need a Vercel Pro plan. */}
+      <Analytics beforeSend={stripQuery} />
+    </>
   )
 }
 

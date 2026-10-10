@@ -238,6 +238,12 @@ data may be stored (under its 100 MB cap). Genre pill colors are deterministic,
 hashed from the genre string (`lib/artistInfo/genreColor.ts`), not a maintained
 palette, since there's no fixed list of possible genre tags.
 
+**Analytics**: Vercel Web Analytics (`<Analytics />` in `App.tsx`),
+page views only — `track()` custom events need a Pro plan, so on Hobby
+they'd silently go nowhere. `beforeSend={stripQuery}` (`lib/analytics.ts`)
+drops query strings and hashes so a URL can never leak a location; the
+Privacy page's "Visit counts" section promises that.
+
 **Routing**: `App.tsx` defines routes nested under a shared `Layout`
 (header + footer chrome): `/` → `LandingPage`, `/news` → `NewsPage`,
 `/map` → `MapPage`, plus `/about`, `/privacy` and `/terms` (linked from the footer,
